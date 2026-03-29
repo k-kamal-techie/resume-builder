@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "/opt/homebrew/bin/node",
+      "args": [
+        "/Users/kamalkumar/projects/resume-builder/node_modules/@playwright/mcp/cli.js"
+      ],
+      "env": {}
+    }
+  }
+}

@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ResumeAI
+
+AI-powered resume builder using Claude to generate, tailor, and optimize resume content.
+
+## Features
+
+- **AI Chat Editor** — Two-panel layout with AI chat (70%) and live preview (30%). Chat with Claude to build and edit your resume conversationally. Changes are auto-applied with undo support.
+- **JSON Editor** — Toggle the preview panel to a JSON editor for direct manual editing of resume data.
+- **Resume Templates** — Classic, Modern, and Minimal templates with live preview.
+- **Job Tailoring** — Paste a job description and get suggestions to tailor your resume.
+- **ATS Scoring** — Get ATS compatibility scores with keyword analysis and improvement suggestions.
+- **Google OAuth** — Sign in with Google (GitHub OAuth optional).
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router) + TypeScript
+- **Styling**: Tailwind CSS v4
+- **Database**: MongoDB + Mongoose
+- **Auth**: Auth.js v5 with Google OAuth + MongoDBAdapter
+- **AI**: Anthropic Messages API (Claude Opus) via OAuth bearer token
+- **Testing**: Playwright (E2E)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your credentials
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+MONGODB_URI=              # MongoDB connection string
+NEXTAUTH_URL=             # http://localhost:3000
+NEXTAUTH_SECRET=          # Generate with: openssl rand -base64 32
+GOOGLE_CLIENT_ID=         # Google OAuth client ID
+GOOGLE_CLIENT_SECRET=     # Google OAuth client secret
+ANTHROPIC_OAUTH_TOKEN=    # Anthropic API OAuth bearer token
+ANTHROPIC_MODEL=          # Default: claude-opus-4-6
+```
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint check |
+| `npx playwright test` | Run E2E tests |
