@@ -69,9 +69,11 @@ export const createResumeSchema = z.object({
   data: resumeDataSchema.optional(),
 });
 
+// Lenient schema for updates — accepts AI-generated data with any shape
 export const updateResumeSchema = z.object({
   title: z.string().min(1).optional(),
   templateId: z.enum(["classic", "modern", "minimal"]).optional(),
-  data: resumeDataSchema.optional(),
+  data: z.any().optional(),
+  jobDescription: z.string().optional(),
   isPublic: z.boolean().optional(),
 });

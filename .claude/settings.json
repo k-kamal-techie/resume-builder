@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__playwright__browser_close",
+      "Read(//Users/kamalkumar/projects/portfolio/**)"
+    ]
+  }
+}

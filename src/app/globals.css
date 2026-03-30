@@ -3,11 +3,21 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent-50: #eff6ff;
+  --accent-100: #dbeafe;
+  --accent-500: #3b82f6;
+  --accent-600: #2563eb;
+  --accent-700: #1d4ed8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

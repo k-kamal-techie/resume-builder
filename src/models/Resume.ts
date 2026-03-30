@@ -160,6 +160,7 @@ export interface IResumeDocument extends Document {
       items: Array<{ heading: string; description: string; date?: string }>;
     }>;
   };
+  jobDescription: string;
   isPublic: boolean;
   lastEditedAt: Date;
 }
@@ -180,6 +181,7 @@ const ResumeSchema = new Schema<IResumeDocument>(
       enum: ["classic", "modern", "minimal"],
     },
     data: { type: ResumeDataSchema, required: true },
+    jobDescription: { type: String, default: "" },
     isPublic: { type: Boolean, default: false },
     lastEditedAt: { type: Date, default: Date.now },
   },

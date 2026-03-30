@@ -5,7 +5,12 @@ interface Props {
 }
 
 export default function ClassicTemplate({ data }: Props) {
-  const { personalInfo, education, experience, skills, projects, certifications } = data;
+  const personalInfo = data.personalInfo || { fullName: "", email: "" };
+  const education = data.education || [];
+  const experience = data.experience || [];
+  const skills = data.skills || [];
+  const projects = data.projects || [];
+  const certifications = data.certifications || [];
 
   return (
     <div className="max-w-[800px] mx-auto bg-white p-8 font-serif text-gray-800 text-sm leading-relaxed">
@@ -51,9 +56,9 @@ export default function ClassicTemplate({ data }: Props) {
               <p className="text-xs text-gray-600 italic">
                 {exp.company}{exp.location ? `, ${exp.location}` : ""}
               </p>
-              {exp.highlights.filter(Boolean).length > 0 && (
+              {(exp.highlights || []).filter(Boolean).length > 0 && (
                 <ul className="list-disc ml-4 mt-1 space-y-0.5">
-                  {exp.highlights.filter(Boolean).map((hl, j) => (
+                  {(exp.highlights || []).filter(Boolean).map((hl, j) => (
                     <li key={j} className="text-xs">{hl}</li>
                   ))}
                 </ul>
@@ -91,12 +96,18 @@ export default function ClassicTemplate({ data }: Props) {
             Skills
           </h2>
           <div className="space-y-1">
-            {skills.map((skill, i) => (
-              <div key={i} className="text-xs">
-                <span className="font-semibold">{skill.category}:</span>{" "}
-                {skill.items.join(", ")}
-              </div>
-            ))}
+            {skills.map((skill: { category?: string; items?: string[]; name?: string }, i: number) => {
+              const items = Array.isArray(skill.items) && skill.items.length > 0
+                ? skill.items
+                : skill.name ? [skill.name] : [];
+              if (items.length === 0) return null;
+              return (
+                <div key={i} className="text-xs">
+                  <span className="font-semibold">{skill.category || ""}:</span>{" "}
+                  {items.join(", ")}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
@@ -114,14 +125,14 @@ export default function ClassicTemplate({ data }: Props) {
                 {proj.url && <span className="text-xs text-blue-600">{proj.url}</span>}
               </div>
               <p className="text-xs text-gray-600">{proj.description}</p>
-              {proj.technologies.length > 0 && (
+              {(proj.technologies || []).length > 0 && (
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Tech: {proj.technologies.join(", ")}
+                  Tech: {(proj.technologies || []).join(", ")}
                 </p>
               )}
-              {proj.highlights.filter(Boolean).length > 0 && (
+              {(proj.highlights || []).filter(Boolean).length > 0 && (
                 <ul className="list-disc ml-4 mt-1 space-y-0.5">
-                  {proj.highlights.filter(Boolean).map((hl, j) => (
+                  {(proj.highlights || []).filter(Boolean).map((hl, j) => (
                     <li key={j} className="text-xs">{hl}</li>
                   ))}
                 </ul>

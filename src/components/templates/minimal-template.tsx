@@ -5,7 +5,12 @@ interface Props {
 }
 
 export default function MinimalTemplate({ data }: Props) {
-  const { personalInfo, education, experience, skills, projects, certifications } = data;
+  const personalInfo = data.personalInfo || { fullName: "", email: "" };
+  const education = data.education || [];
+  const experience = data.experience || [];
+  const skills = data.skills || [];
+  const projects = data.projects || [];
+  const certifications = data.certifications || [];
 
   return (
     <div className="max-w-[800px] mx-auto bg-white p-8 font-sans text-gray-800 text-sm">
@@ -49,9 +54,9 @@ export default function MinimalTemplate({ data }: Props) {
                   {exp.startDate} — {exp.current ? "Present" : exp.endDate}
                 </span>
               </div>
-              {exp.highlights.filter(Boolean).length > 0 && (
+              {(exp.highlights || []).filter(Boolean).length > 0 && (
                 <ul className="mt-1.5 space-y-0.5">
-                  {exp.highlights.filter(Boolean).map((hl, j) => (
+                  {(exp.highlights || []).filter(Boolean).map((hl, j) => (
                     <li key={j} className="text-xs text-gray-600 pl-3 relative before:content-['–'] before:absolute before:left-0 before:text-gray-300">
                       {hl}
                     </li>
@@ -92,13 +97,19 @@ export default function MinimalTemplate({ data }: Props) {
             Skills
           </h2>
           <div className="space-y-1">
-            {skills.map((skill, i) => (
-              <div key={i} className="text-xs">
-                <span className="text-gray-500 font-medium">{skill.category}</span>
-                <span className="text-gray-300 mx-2">·</span>
-                <span className="text-gray-600">{skill.items.join(" · ")}</span>
-              </div>
-            ))}
+            {skills.map((skill: { category?: string; items?: string[]; name?: string }, i: number) => {
+              const items = Array.isArray(skill.items) && skill.items.length > 0
+                ? skill.items
+                : skill.name ? [skill.name] : [];
+              if (items.length === 0) return null;
+              return (
+                <div key={i} className="text-xs">
+                  <span className="text-gray-500 font-medium">{skill.category || ""}</span>
+                  <span className="text-gray-300 mx-2">·</span>
+                  <span className="text-gray-600">{items.join(" · ")}</span>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
@@ -113,8 +124,8 @@ export default function MinimalTemplate({ data }: Props) {
             <div key={i} className="mb-3">
               <div className="flex items-baseline gap-2">
                 <span className="font-medium text-sm">{proj.name}</span>
-                {proj.technologies.length > 0 && (
-                  <span className="text-[10px] text-gray-400">{proj.technologies.join(", ")}</span>
+                {(proj.technologies || []).length > 0 && (
+                  <span className="text-[10px] text-gray-400">{(proj.technologies || []).join(", ")}</span>
                 )}
               </div>
               <p className="text-xs text-gray-600 mt-0.5">{proj.description}</p>

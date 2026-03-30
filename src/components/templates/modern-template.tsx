@@ -6,7 +6,12 @@ interface Props {
 }
 
 export default function ModernTemplate({ data }: Props) {
-  const { personalInfo, education, experience, skills, projects, certifications } = data;
+  const personalInfo = data.personalInfo || { fullName: "", email: "" };
+  const education = data.education || [];
+  const experience = data.experience || [];
+  const skills = data.skills || [];
+  const projects = data.projects || [];
+  const certifications = data.certifications || [];
 
   return (
     <div className="max-w-[800px] mx-auto bg-white font-sans text-gray-700 text-sm">
@@ -61,9 +66,9 @@ export default function ModernTemplate({ data }: Props) {
                 <p className="text-xs text-blue-600 font-medium">
                   {exp.company}{exp.location ? ` · ${exp.location}` : ""}
                 </p>
-                {exp.highlights.filter(Boolean).length > 0 && (
+                {(exp.highlights || []).filter(Boolean).length > 0 && (
                   <ul className="mt-2 space-y-1">
-                    {exp.highlights.filter(Boolean).map((hl, j) => (
+                    {(exp.highlights || []).filter(Boolean).map((hl, j) => (
                       <li key={j} className="text-xs text-gray-600 flex gap-2">
                         <span className="text-blue-400 mt-1">▸</span>
                         {hl}
@@ -108,9 +113,9 @@ export default function ModernTemplate({ data }: Props) {
                   <div key={i} className="mb-3">
                     <h3 className="font-bold text-xs">{proj.name}</h3>
                     <p className="text-xs text-gray-600">{proj.description}</p>
-                    {proj.technologies.length > 0 && (
+                    {(proj.technologies || []).length > 0 && (
                       <div className="flex gap-1 mt-1 flex-wrap">
-                        {proj.technologies.map((tech, j) => (
+                        {(proj.technologies || []).map((tech, j) => (
                           <span key={j} className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded">
                             {tech}
                           </span>
@@ -131,18 +136,24 @@ export default function ModernTemplate({ data }: Props) {
                   <div className="w-2 h-2 rounded-full bg-blue-600" />
                   Skills
                 </h2>
-                {skills.map((skill, i) => (
-                  <div key={i} className="mb-3">
-                    <h3 className="text-xs font-semibold text-gray-700 mb-1">{skill.category}</h3>
-                    <div className="flex flex-wrap gap-1">
-                      {skill.items.map((item, j) => (
-                        <span key={j} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-full">
-                          {item}
-                        </span>
-                      ))}
+                {skills.map((skill: { category?: string; items?: string[]; name?: string }, i: number) => {
+                  const items = Array.isArray(skill.items) && skill.items.length > 0
+                    ? skill.items
+                    : skill.name ? [skill.name] : [];
+                  if (items.length === 0) return null;
+                  return (
+                    <div key={i} className="mb-3">
+                      <h3 className="text-xs font-semibold text-gray-700 mb-1">{skill.category || ""}</h3>
+                      <div className="flex flex-wrap gap-1">
+                        {items.map((item: string, j: number) => (
+                          <span key={j} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-full">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </section>
             )}
 

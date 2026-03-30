@@ -1,21 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { streamMessage } from "@/lib/anthropic";
-import dbConnect from "@/lib/mongoose";
-import ChatHistory from "@/models/ChatHistory";
+// Chat persistence is handled client-side via /api/chat-sessions
 
-const SYSTEM_PROMPT = `You are an expert professional resume writer and career coach. You help users craft compelling, ATS-friendly resume content.
+const SYSTEM_PROMPT = `You are an expert professional resume writer, career coach, and personal knowledge manager. You help users build and manage their professional profile and craft compelling, ATS-friendly resumes.
+
+You have access to two data stores:
+1. Knowledge Base (KB) — the user's complete professional profile (all skills, experiences, projects, achievements)
+2. Current Resume — a specific resume being edited (a curated subset of the KB for a particular job)
 
 Your capabilities:
-- Generate professional bullet points from rough descriptions of work experience
+- Generate professional bullet points with strong action verbs and quantified results
 - Write compelling professional summaries
-- Suggest improvements to existing resume content
-- Use strong action verbs and quantify achievements where possible
-- Follow best practices: concise, impactful, results-oriented language
+- Add, edit, or remove skills, experience, projects, and achievements
+- Tailor resumes to specific job descriptions by selecting relevant items from the KB
+- Ask clarifying questions to gather more details before making changes
 
-When the user describes their work or projects, transform it into polished resume-ready content. Always maintain a professional tone and focus on measurable impact.
+When you make changes:
+- To update the resume, output a complete JSON in a resume-json code block
+- To update the knowledge base, output a complete JSON in a kb-json code block
+- You can output both if updating both stores
 
-Format your responses in clear sections when providing multiple pieces of content. Use bullet points for experience highlights.`;
+Be conversational and agentic. Ask questions to understand the user's background. When adding new information, ask about details like dates, metrics, and impact before finalizing.`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,19 +49,6 @@ export async function POST(req: NextRequest) {
     const response = await streamMessage({
       system: SYSTEM_PROMPT,
       messages,
-    });
-
-    // Save chat message to history (fire and forget)
-    dbConnect().then(() => {
-      ChatHistory.findOneAndUpdate(
-        { resumeId, userId: session.user!.id },
-        {
-          $push: {
-            messages: { role: "user", content: message, timestamp: new Date() },
-          },
-        },
-        { upsert: true }
-      ).catch(console.error);
     });
 
     return new Response(response.body, {

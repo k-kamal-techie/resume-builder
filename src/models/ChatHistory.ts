@@ -9,6 +9,7 @@ export interface IChatMessage {
 export interface IChatHistory extends Document {
   resumeId: Types.ObjectId;
   userId: Types.ObjectId;
+  title: string;
   messages: IChatMessage[];
 }
 
@@ -35,10 +36,14 @@ const ChatHistorySchema = new Schema<IChatHistory>(
       required: true,
       index: true,
     },
+    title: { type: String, default: "New Chat" },
     messages: [ChatMessageSchema],
   },
   { timestamps: true }
 );
+
+// Compound index for listing sessions per resume per user
+ChatHistorySchema.index({ resumeId: 1, userId: 1 });
 
 export default mongoose.models.ChatHistory ||
   mongoose.model<IChatHistory>("ChatHistory", ChatHistorySchema);

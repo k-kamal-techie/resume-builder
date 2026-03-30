@@ -20,10 +20,32 @@ const templates = {
 export default function ResumePreview({ data, templateId, scale = 0.7 }: Props) {
   const Template = templates[templateId] || ClassicTemplate;
 
+  // A4 dimensions in px (at 96dpi): 210mm ≈ 794px, 297mm ≈ 1123px
+  const pageWidth = 794;
+  const pageHeight = 1123;
+  const scaledWidth = pageWidth * scale;
+  const scaledHeight = pageHeight * scale;
+
   return (
-    <div className="bg-gray-100 p-4 min-h-full overflow-auto">
-      <div className="shadow-lg mx-auto" style={{ width: "210mm", minHeight: "297mm", transform: `scale(${scale})`, transformOrigin: "top center" }}>
-        <Template data={data} />
+    <div className="bg-gray-100 p-4 min-h-full overflow-auto flex justify-center">
+      <div
+        style={{
+          width: scaledWidth,
+          minHeight: scaledHeight,
+          flexShrink: 0,
+        }}
+      >
+        <div
+          className="shadow-lg bg-white"
+          style={{
+            width: pageWidth,
+            minHeight: pageHeight,
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+          }}
+        >
+          <Template data={data} />
+        </div>
       </div>
     </div>
   );

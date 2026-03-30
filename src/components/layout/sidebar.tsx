@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LuLayoutDashboard, LuPlus, LuFileText } from "react-icons/lu";
+import { LuLayoutDashboard, LuPlus, LuFileText, LuBrain } from "react-icons/lu";
 
 const navItems = [
   { href: "/dashboard", label: "My Resumes", icon: LuLayoutDashboard },
+  { href: "/knowledge-base", label: "Knowledge Base", icon: LuBrain },
   { href: "/templates", label: "Templates", icon: LuFileText },
 ];
 
@@ -17,7 +18,7 @@ export default function Sidebar() {
       <div className="p-4">
         <Link
           href="/dashboard?new=true"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-700 transition-colors"
         >
           <LuPlus className="h-4 w-4" />
           New Resume
@@ -32,7 +33,7 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-blue-50 text-blue-700"
+                  ? "bg-accent-50 text-accent-700"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >

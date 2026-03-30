@@ -9,7 +9,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md mx-auto p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100 text-blue-600 mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent-100 text-accent-600 mb-4">
             <LuFileText className="h-6 w-6" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Welcome to ResumeAI</h1>

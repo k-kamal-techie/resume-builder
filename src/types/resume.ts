@@ -75,6 +75,7 @@ export interface IResume {
   title: string;
   templateId: TemplateId;
   data: ResumeData;
+  jobDescription?: string;
   isPublic: boolean;
   lastEditedAt: Date;
   createdAt: Date;

@@ -14,7 +14,7 @@ const templates = [
     name: "Modern",
     description:
       "Contemporary design with a colored header, sidebar layout, and clean typography. Great for tech and creative roles.",
-    color: "bg-blue-600",
+    color: "bg-accent-600",
   },
   {
     id: "minimal",
@@ -60,7 +60,7 @@ export default function TemplatesPage() {
                 <p className="text-sm text-gray-600 mt-2">{template.description}</p>
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-blue-600 hover:text-blue-800"
+                  className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-accent-600 hover:text-blue-800"
                 >
                   Use this template
                   <LuArrowRight className="h-4 w-4" />

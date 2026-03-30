@@ -27,7 +27,7 @@ export default function PreviewPanel({
           onClick={() => onViewModeChange("preview")}
           className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
             viewMode === "preview"
-              ? "bg-blue-100 text-blue-700"
+              ? "bg-accent-100 text-accent-700"
               : "text-gray-600 hover:bg-gray-100"
           }`}
         >
@@ -38,7 +38,7 @@ export default function PreviewPanel({
           onClick={() => onViewModeChange("json-editor")}
           className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
             viewMode === "json-editor"
-              ? "bg-blue-100 text-blue-700"
+              ? "bg-accent-100 text-accent-700"
               : "text-gray-600 hover:bg-gray-100"
           }`}
         >
@@ -50,7 +50,7 @@ export default function PreviewPanel({
       <div className="flex-1 overflow-hidden">
         {viewMode === "preview" ? (
           <div className="h-full overflow-auto">
-            <ResumePreview data={data} templateId={templateId} scale={0.45} />
+            <ResumePreview data={data} templateId={templateId} scale={0.6} />
           </div>
         ) : (
           <JsonEditor data={data} onChange={onDataChange} />
