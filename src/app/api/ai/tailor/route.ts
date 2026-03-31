@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
+import { getUserAISettings } from "@/lib/getUserAISettings";
 
 const SYSTEM_PROMPT = `You are an expert resume tailoring specialist. You analyze job descriptions and modify resumes to better match the role while keeping content truthful.
 
@@ -47,10 +48,14 @@ Return as JSON:
   "tailoredSummary": "..."
 }`;
 
+    const aiSettings = await getUserAISettings(session.user.id);
+
     const response = await sendMessage({
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: prompt }],
       maxTokens: 8192,
+      apiKey: aiSettings.apiKey,
+      model: aiSettings.model,
     });
 
     const content = response.content[0]?.text || "";
