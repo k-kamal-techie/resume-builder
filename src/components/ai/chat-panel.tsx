@@ -129,14 +129,14 @@ function MessageContent({
 
   return (
     <div>
-      <div className="prose prose-sm max-w-none text-slate-700
+      <div className="prose prose-sm max-w-none text-slate-700 dark:text-slate-300
         [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
         [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0 [&_p]:my-1
         [&_h2]:text-sm [&_h3]:text-sm [&_h2]:font-semibold [&_h3]:font-semibold
-        [&_code]:text-xs [&_code]:bg-slate-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded
-        [&_pre]:bg-slate-50 [&_pre]:text-xs [&_pre]:p-2 [&_pre]:rounded [&_pre]:overflow-x-auto
+        [&_code]:text-xs [&_code]:bg-slate-100 dark:[&_code]:bg-slate-700 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-slate-700 dark:[&_code]:text-slate-300
+        [&_pre]:bg-slate-50 dark:[&_pre]:bg-slate-900 [&_pre]:text-xs [&_pre]:p-2 [&_pre]:rounded [&_pre]:overflow-x-auto
         [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1
-        [&_strong]:text-slate-900 [&_a]:text-accent-600">
+        [&_strong]:text-slate-900 dark:[&_strong]:text-slate-100 [&_a]:text-accent-600">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
       </div>
 
@@ -156,7 +156,7 @@ function MessageContent({
         </div>
       )}
       {showJson && jsonMatch && (
-        <pre className="mt-2 text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 overflow-x-auto max-h-48 overflow-y-auto text-slate-600 font-mono">
+        <pre className="mt-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 overflow-x-auto max-h-48 overflow-y-auto text-slate-600 dark:text-slate-400 font-mono">
           {jsonMatch[1].trim()}
         </pre>
       )}
@@ -437,85 +437,102 @@ export default function ChatPanel({
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900">
 
       {/* ── Header ── */}
-      <div className="px-5 py-3.5 border-b border-slate-100 shrink-0">
-        <div className="flex items-center justify-between mb-2">
+      <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-700/60 shrink-0 relative bg-white dark:bg-slate-900">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-7 w-7 rounded-full bg-slate-800 flex items-center justify-center">
+            <div className="h-7 w-7 rounded-full bg-slate-800 dark:bg-slate-700 flex items-center justify-center">
               <LuBot className="h-4 w-4 text-white" />
             </div>
-            <span className="text-sm font-semibold text-slate-900">Resume Agent</span>
+            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">Resume Agent</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <button onClick={() => setShowSessions(!showSessions)}
-              className="flex items-center gap-1 px-2 py-1 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-md transition-colors">
-              <LuMessageSquare className="h-3.5 w-3.5" />
-              {sessions.length > 0 ? `${sessions.length} chats` : "Chats"}
-            </button>
-            <button onClick={handleNewSession}
-              className="flex items-center gap-1 px-2 py-1 text-xs text-accent-600 hover:bg-accent-50 rounded-md transition-colors font-medium">
-              <LuPlus className="h-3.5 w-3.5" /> New
-            </button>
-          </div>
-        </div>
-
-        {/* Status chips */}
-        {statusChips.length > 0 && (
-          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Status chips */}
             {statusChips.map((chip) => (
               <span key={chip.label} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${chip.color}`}>
                 {chip.label === "Thinking..." && <LuLoader className="h-2.5 w-2.5 animate-spin" />}
                 {chip.label}
               </span>
             ))}
+            <button onClick={() => setShowSessions(!showSessions)}
+              className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md transition-colors ${
+                showSessions
+                  ? "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60"
+              }`}>
+              <LuMessageSquare className="h-3.5 w-3.5" />
+              {sessions.length > 0 ? `${sessions.length} chats` : "Chats"}
+              <LuChevronDown className={`h-3 w-3 transition-transform ${showSessions ? "rotate-180" : ""}`} />
+            </button>
+            <button onClick={handleNewSession}
+              className="flex items-center gap-1 px-2 py-1 text-xs text-accent-600 hover:bg-accent-50 dark:hover:bg-accent-600/10 rounded-md transition-colors font-medium">
+              <LuPlus className="h-3.5 w-3.5" /> New
+            </button>
           </div>
-        )}
+        </div>
 
-        {/* Session dropdown */}
-        {showSessions && sessions.length > 0 && (
-          <div className="mt-2 pt-2 border-t border-slate-100 max-h-40 overflow-y-auto space-y-0.5">
-            {sessions.map((s) => (
-              <div key={s._id} className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs transition-colors ${
-                activeSessionId === s._id ? "bg-accent-50 text-accent-700" : "text-slate-500 hover:bg-slate-50"}`}>
-                {renamingSessionId === s._id ? (
-                  <input autoFocus value={renameValue}
-                    onChange={(e) => setRenameValue(e.target.value)}
-                    onBlur={() => renameSession(s._id, renameValue)}
-                    onKeyDown={(e) => { if (e.key === "Enter") renameSession(s._id, renameValue); if (e.key === "Escape") setRenamingSessionId(null); }}
-                    className="flex-1 text-xs bg-white border border-slate-300 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-accent-500" />
-                ) : (
-                  <button onClick={() => { loadSession(s._id); setShowSessions(false); }}
-                    onDoubleClick={(e) => { e.stopPropagation(); setRenamingSessionId(s._id); setRenameValue(s.title); }}
-                    className="flex-1 text-left min-w-0">
-                    <div className="font-medium truncate">{s.title}</div>
-                    <div className="text-slate-400">{s.messageCount} msgs · {new Date(s.updatedAt).toLocaleDateString()}</div>
-                  </button>
-                )}
+        {/* Session dropdown — popup card */}
+        {showSessions && (
+          <>
+            <div className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-[1px] z-10" onClick={() => setShowSessions(false)} />
+            <div className="absolute top-full right-3 mt-2 w-72 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/80 rounded-2xl shadow-2xl ring-1 ring-slate-900/10 dark:ring-white/10 z-20 overflow-hidden">
+              <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Chat History</span>
+                <button onClick={handleNewSession} className="text-xs text-accent-600 font-medium hover:text-accent-700 flex items-center gap-1">
+                  <LuPlus className="h-3 w-3" /> New chat
+                </button>
               </div>
-            ))}
-          </div>
+              {sessions.length === 0 ? (
+                <div className="px-4 py-5 text-xs text-slate-400 text-center">No chats yet</div>
+              ) : (
+                <div className="max-h-56 overflow-y-auto">
+                  {sessions.map((s) => (
+                    <div key={s._id} className={`flex items-center gap-1 px-4 py-2.5 border-b border-slate-50 dark:border-slate-700/50 last:border-0 transition-colors ${
+                      activeSessionId === s._id
+                        ? "bg-accent-50 dark:bg-accent-600/10"
+                        : "hover:bg-slate-50 dark:hover:bg-slate-700/40"}`}>
+                      {renamingSessionId === s._id ? (
+                        <input autoFocus value={renameValue}
+                          onChange={(e) => setRenameValue(e.target.value)}
+                          onBlur={() => renameSession(s._id, renameValue)}
+                          onKeyDown={(e) => { if (e.key === "Enter") renameSession(s._id, renameValue); if (e.key === "Escape") setRenamingSessionId(null); }}
+                          className="flex-1 text-xs bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-1 py-0.5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-accent-500" />
+                      ) : (
+                        <button onClick={() => { loadSession(s._id); setShowSessions(false); }}
+                          onDoubleClick={(e) => { e.stopPropagation(); setRenamingSessionId(s._id); setRenameValue(s.title); }}
+                          className="flex-1 text-left min-w-0">
+                          <div className={`text-xs font-medium truncate ${activeSessionId === s._id ? "text-accent-700 dark:text-accent-400" : "text-slate-700 dark:text-slate-200"}`}>{s.title}</div>
+                          <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{s.messageCount} msgs · {new Date(s.updatedAt).toLocaleDateString()}</div>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
 
       {/* ── Messages ── */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 bg-white dark:bg-slate-900">
         {loadingSession && (
           <div className="flex items-center justify-center py-12"><LoadingSpinner /></div>
         )}
 
         {!loadingSession && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-12 px-6">
-            <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
-              <LuBot className="h-6 w-6 text-slate-400" />
+            <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
+              <LuBot className="h-6 w-6 text-slate-400 dark:text-slate-500" />
             </div>
-            <p className="text-sm font-semibold text-slate-700">How can I help with your resume?</p>
-            <p className="text-xs text-slate-400 mt-1.5 max-w-xs">
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">How can I help with your resume?</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5 max-w-xs">
               I have access to your knowledge base. Ask me to improve bullets, write a summary, or tailor for a job description.
             </p>
-            <p className="text-[11px] text-slate-400 mt-3">
-              Type <span className="font-mono bg-slate-100 px-1 rounded">/</span> for quick commands
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-3">
+              Type <span className="font-mono bg-slate-100 dark:bg-slate-800 px-1 rounded text-slate-600 dark:text-slate-300">/</span> for quick commands
             </p>
           </div>
         )}
@@ -530,7 +547,7 @@ export default function ChatPanel({
               <div className={`rounded-2xl px-4 py-3 text-sm ${
                 msg.role === "user"
                   ? "bg-accent-600 text-white rounded-tr-sm"
-                  : "bg-slate-50 border border-slate-100 text-slate-800 rounded-tl-sm"
+                  : "bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 text-slate-800 dark:text-slate-200 rounded-tl-sm"
               }`}>
                 {msg.role === "assistant" ? (
                   <MessageContent
@@ -545,7 +562,7 @@ export default function ChatPanel({
                 )}
               </div>
               {msg.timestamp && (
-                <span className="text-[10px] text-slate-400 mt-1 px-1">{formatTime(msg.timestamp)}</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 px-1">{formatTime(msg.timestamp)}</span>
               )}
             </div>
           </div>
@@ -554,7 +571,7 @@ export default function ChatPanel({
         {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
           <div className="flex gap-3">
             <AgentAvatar />
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2 text-xs text-slate-500">
+            <div className="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <LuLoader className="h-3.5 w-3.5 animate-spin text-accent-500" />
               Thinking...
             </div>
@@ -564,25 +581,30 @@ export default function ChatPanel({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ── Slash Command Menu ── */}
-      {showSlashMenu && (
-        <div className="border-t border-slate-100 bg-white px-3 py-2 shrink-0 shadow-inner">
-          {slashCommands
-            .filter((cmd) => !slashFilter || cmd.command.startsWith(slashFilter))
-            .map((cmd) => (
-              <button key={cmd.command} onClick={() => handleSlashCommand(cmd.command)}
-                className="w-full text-left px-3 py-1.5 rounded-lg hover:bg-slate-50 flex items-center gap-3 transition-colors">
-                <span className="text-xs font-mono text-accent-600 font-bold w-20">{cmd.command}</span>
-                <span className="text-xs text-slate-500">{cmd.description}</span>
-              </button>
-            ))}
-        </div>
-      )}
-
       {/* ── Input ── */}
-      <div className="px-4 py-3 border-t border-slate-100 bg-white shrink-0">
-        <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2 border border-slate-200 focus-within:border-accent-400 focus-within:ring-2 focus-within:ring-accent-500/20 transition-all">
-          <button className="text-slate-400 hover:text-slate-600 transition-colors">
+      <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-700/60 bg-white dark:bg-slate-900 shrink-0 relative">
+
+        {/* Slash Command Dropdown — popup above input */}
+        {showSlashMenu && (() => {
+          const filtered = slashCommands.filter((cmd) => !slashFilter || cmd.command.startsWith(slashFilter));
+          return filtered.length > 0 ? (
+            <div className="absolute bottom-full left-4 right-4 mb-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600/80 rounded-2xl shadow-2xl ring-1 ring-slate-900/10 dark:ring-white/10 overflow-hidden z-20">
+              <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Quick Commands</span>
+              </div>
+              {filtered.map((cmd) => (
+                <button key={cmd.command} onClick={() => handleSlashCommand(cmd.command)}
+                  className="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center gap-3 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-0">
+                  <span className="text-xs font-mono text-accent-600 dark:text-accent-400 font-bold w-20 shrink-0">{cmd.command}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">{cmd.description}</span>
+                </button>
+              ))}
+            </div>
+          ) : null;
+        })()}
+
+        <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 rounded-xl px-3 py-2 border border-slate-200 dark:border-slate-600/60 focus-within:border-accent-400 focus-within:ring-2 focus-within:ring-accent-500/20 transition-all">
+          <button className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
             <LuPaperclip className="h-4 w-4" />
           </button>
           <input
@@ -601,7 +623,7 @@ export default function ChatPanel({
               if (e.key === "Escape") setShowSlashMenu(false);
             }}
             placeholder="Paste Job Description or ask the agent..."
-            className="flex-1 bg-transparent text-sm text-slate-800 placeholder-slate-400 focus:outline-none min-w-0"
+            className="flex-1 bg-transparent text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none min-w-0"
             disabled={isLoading}
           />
           <button
@@ -612,18 +634,18 @@ export default function ChatPanel({
           </button>
         </div>
         <div className="flex items-center justify-between mt-1.5 px-1">
-          <span className="text-[10px] text-slate-400">Agentic Engine v2.4</span>
-          <span className="text-[10px] text-slate-400">Shift + Enter to send</span>
+          <span className="text-[10px] text-slate-400 dark:text-slate-500">Agentic Engine v2.4</span>
+          <span className="text-[10px] text-slate-400 dark:text-slate-500">Enter to send</span>
         </div>
       </div>
 
       {/* ── JD Modal ── */}
       {showJdEditor && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowJdEditor(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-5" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Job Description</h3>
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowJdEditor(false)}>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl ring-1 ring-slate-900/10 dark:ring-white/10 w-full max-w-lg p-5" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Job Description</h3>
             <textarea autoFocus value={jdDraft} onChange={(e) => setJdDraft(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 p-3 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-accent-500 min-h-[200px] text-slate-700"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-600 p-3 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-accent-500 min-h-[200px] text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 placeholder-slate-400 dark:placeholder-slate-500"
               placeholder="Paste the job description here..." />
             <div className="flex justify-end gap-2 mt-3">
               <Button size="sm" variant="ghost" onClick={() => setShowJdEditor(false)}>Cancel</Button>

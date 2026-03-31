@@ -1,10 +1,29 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { LuBolt } from "react-icons/lu";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { LuBolt, LuLoader } from "react-icons/lu";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 
 export default function LoginPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
+
+  if (status === "loading" || status === "authenticated") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <LuLoader className="h-6 w-6 animate-spin text-accent-600" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-sm mx-auto px-6">
