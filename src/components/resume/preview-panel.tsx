@@ -2,11 +2,10 @@
 
 import ResumePreview from "./resume-preview";
 import JsonEditor from "./json-editor";
-import { useTheme, colorPresets } from "@/components/providers/theme-provider";
 import type { ResumeData, TemplateId } from "@/types/resume";
-import { LuEye, LuCode, LuDownload, LuPalette } from "react-icons/lu";
+import { LuEye, LuCode, LuDownload } from "react-icons/lu";
 
-type TabMode = "preview" | "json-editor" | "theme";
+type TabMode = "preview" | "json-editor";
 
 interface PreviewPanelProps {
   data: ResumeData;
@@ -17,37 +16,9 @@ interface PreviewPanelProps {
 }
 
 const tabs: { id: TabMode; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "preview",     label: "Preview",    icon: LuEye },
-  { id: "json-editor", label: "Edit JSON",  icon: LuCode },
-  { id: "theme",       label: "Theme",      icon: LuPalette },
+  { id: "preview",     label: "Preview",   icon: LuEye },
+  { id: "json-editor", label: "Edit JSON", icon: LuCode },
 ];
-
-function ThemeTab() {
-  const { preset, setPreset } = useTheme();
-  return (
-    <div className="p-5 space-y-6">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Accent Color</p>
-        <div className="grid grid-cols-4 gap-3">
-          {colorPresets.map((p) => (
-            <button
-              key={p.name}
-              onClick={() => setPreset(p.name)}
-              className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all ${
-                preset === p.name
-                  ? "border-slate-800 bg-slate-50"
-                  : "border-transparent hover:border-slate-200"
-              }`}
-            >
-              <div className="h-8 w-8 rounded-full" style={{ backgroundColor: p.colors[600] }} />
-              <span className="text-[10px] font-medium text-slate-600">{p.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function PreviewPanel({
   data,
@@ -56,32 +27,21 @@ export default function PreviewPanel({
   onViewModeChange,
   onDataChange,
 }: PreviewPanelProps) {
-  const activeTab: TabMode = viewMode === "json-editor" ? "json-editor" : "preview";
-
-  function handleTabClick(id: TabMode) {
-    if (id === "theme") {
-      // handled internally
-      onViewModeChange("preview");
-    } else {
-      onViewModeChange(id);
-    }
-  }
-
   return (
-    <div className="flex flex-col h-full border-l border-slate-100 bg-white">
+    <div className="flex flex-col h-full border-l border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
       {/* Tab bar */}
-      <div className="flex items-center border-b border-slate-100 px-2 shrink-0 bg-white">
+      <div className="flex items-center border-b border-slate-100 dark:border-slate-800 px-2 shrink-0 bg-white dark:bg-slate-900">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive = tab.id === activeTab || (tab.id === "theme" && viewMode === "preview" && activeTab === "preview" && false);
+          const isActive = tab.id === viewMode;
           return (
             <button
               key={tab.id}
-              onClick={() => handleTabClick(tab.id)}
+              onClick={() => onViewModeChange(tab.id)}
               className={`flex items-center gap-1.5 px-3 py-3 text-xs font-medium border-b-2 transition-colors ${
-                (tab.id === activeTab)
+                isActive
                   ? "border-accent-600 text-accent-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
+                  : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -92,7 +52,7 @@ export default function PreviewPanel({
         <div className="ml-auto flex items-center gap-1 pr-2">
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
             title="Export PDF"
           >
             <LuDownload className="h-3.5 w-3.5" />
@@ -106,7 +66,7 @@ export default function PreviewPanel({
         {viewMode === "json-editor" ? (
           <JsonEditor data={data} onChange={onDataChange} />
         ) : (
-          <div className="h-full overflow-auto bg-slate-100">
+          <div className="h-full overflow-auto bg-slate-100 dark:bg-slate-800">
             <ResumePreview data={data} templateId={templateId} scale={0.6} />
           </div>
         )}
