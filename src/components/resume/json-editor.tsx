@@ -51,21 +51,21 @@ export default function JsonEditor({ data, onChange }: JsonEditorProps) {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-gray-900">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-gray-900">
       {isDirty && (
-        <div className="flex items-center justify-between px-3 py-2 bg-gray-800 border-b border-gray-700">
-          <span className="text-xs text-yellow-400">Unsaved changes</span>
+        <div className="flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700">
+          <span className="text-xs text-amber-600 dark:text-yellow-400">Unsaved changes</span>
           <div className="flex gap-2">
             <button
               onClick={resetChanges}
-              className="text-xs text-gray-400 hover:text-white px-2 py-1 rounded hover:bg-gray-700"
+              className="text-xs text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-gray-700"
             >
               Reset
             </button>
             <button
               onClick={applyChanges}
               disabled={!!error}
-              className="text-xs text-green-400 hover:text-green-300 disabled:opacity-50 px-2 py-1 rounded hover:bg-gray-700 disabled:hover:bg-transparent"
+              className="text-xs text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 disabled:opacity-50 px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-gray-700 disabled:hover:bg-transparent"
             >
               Apply
             </button>
@@ -73,14 +73,14 @@ export default function JsonEditor({ data, onChange }: JsonEditorProps) {
         </div>
       )}
       {error && (
-        <div className="px-3 py-1.5 bg-red-900/30 text-red-400 text-xs">
+        <div className="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs border-b border-red-100 dark:border-transparent">
           {error}
         </div>
       )}
       <textarea
         value={jsonText}
         onChange={(e) => handleChange(e.target.value)}
-        className="flex-1 bg-gray-900 text-green-400 font-mono text-xs p-4 resize-none focus:outline-none leading-relaxed"
+        className="flex-1 bg-slate-50 dark:bg-gray-900 text-slate-700 dark:text-green-400 font-mono text-xs p-4 resize-none focus:outline-none leading-relaxed"
         spellCheck={false}
       />
     </div>

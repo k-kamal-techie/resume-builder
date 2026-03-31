@@ -44,21 +44,21 @@ export default function KnowledgeBasePage() {
 
   if (!data) {
     return (
-      <div className="p-6 text-center text-gray-500">
+      <div className="p-6 text-center text-slate-500 dark:text-slate-400">
         Failed to load knowledge base.
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white shrink-0">
+    <div className="flex flex-col h-[calc(100vh-3rem)]">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shrink-0">
         <div>
-          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <LuBrain className="h-5 w-5 text-accent-600" />
             Knowledge Base
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             {data.skills.length} skills, {data.timeline.length} timeline entries, {data.projects.length} projects
           </p>
         </div>
@@ -68,7 +68,7 @@ export default function KnowledgeBasePage() {
             {saving ? "Saving..." : "Save"}
           </Button>
           {lastSaved && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-slate-400 dark:text-slate-500">
               Saved {lastSaved.toLocaleTimeString()}
             </span>
           )}
