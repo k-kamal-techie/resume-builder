@@ -1,58 +1,90 @@
-# ResumeAI
+# Agentic Resume
 
-AI-powered resume builder using Claude to generate, tailor, and optimize resume content.
+An AI-first resume builder powered by Claude. Chat with an AI agent to build, tailor, and optimize your resume. Backed by a Personal Knowledge Base that stores your entire professional life.
 
 ## Features
 
-- **AI Chat Editor** — Two-panel layout with AI chat (70%) and live preview (30%). Chat with Claude to build and edit your resume conversationally. Changes are auto-applied with undo support.
-- **JSON Editor** — Toggle the preview panel to a JSON editor for direct manual editing of resume data.
-- **Resume Templates** — Classic, Modern, and Minimal templates with live preview.
-- **Job Tailoring** — Paste a job description and get suggestions to tailor your resume.
-- **ATS Scoring** — Get ATS compatibility scores with keyword analysis and improvement suggestions.
-- **Google OAuth** — Sign in with Google (GitHub OAuth optional).
+| Feature | Description |
+|---|---|
+| **Agentic AI Chat** | Chat with Claude to build and edit your resume. The agent asks questions, updates both the resume and knowledge base, and auto-applies changes with undo. |
+| **Personal Knowledge Base** | One persistent document per user — stores all skills, timeline, projects, and achievements. Seeded from portfolio data. Used as context in every chat. |
+| **Slash Commands** | `/tailor`, `/ats`, `/improve`, `/summary`, `/save`, `/jd` — quick agent commands from the chat input. |
+| **Live Preview** | Resume preview updates in real-time as the AI applies changes. Toggle to JSON editor for manual edits. |
+| **Multi-Session Chat** | Multiple chat sessions per resume. Auto-named, auto-saved, inline rename. |
+| **Theme Selector** | 7 accent color presets (Blue, Purple, Green, Teal, Orange, Rose, Indigo). Persists across sessions. |
+| **Resume Templates** | Classic, Modern, and Minimal templates. |
+| **ATS Scoring** | Get ATS compatibility score against a saved job description. |
+| **Job Tailoring** | Tailor your resume to a specific JD stored per resume. |
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router) + TypeScript
-- **Styling**: Tailwind CSS v4
-- **Database**: MongoDB + Mongoose
-- **Auth**: Auth.js v5 with Google OAuth + MongoDBAdapter
+- **Framework**: Next.js 16 (App Router) + TypeScript
+- **Styling**: Tailwind CSS v4 — CSS-first, accent color via CSS variables
+- **Database**: MongoDB Atlas + Mongoose
+- **Auth**: Auth.js v5 — Google OAuth + MongoDBAdapter
 - **AI**: Anthropic Messages API (Claude Opus) via OAuth bearer token
-- **Testing**: Playwright (E2E)
+- **Process Manager**: PM2 (production)
+- **Reverse Proxy**: Nginx
 
 ## Getting Started
 
 ```bash
-# Install dependencies
 npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your credentials
-
-# Run development server
+cp .env.example .env.local   # fill in your credentials
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Environment Variables
 
-```
-MONGODB_URI=              # MongoDB connection string
-NEXTAUTH_URL=             # http://localhost:3000
-NEXTAUTH_SECRET=          # Generate with: openssl rand -base64 32
-GOOGLE_CLIENT_ID=         # Google OAuth client ID
-GOOGLE_CLIENT_SECRET=     # Google OAuth client secret
-ANTHROPIC_OAUTH_TOKEN=    # Anthropic API OAuth bearer token
-ANTHROPIC_MODEL=          # Default: claude-opus-4-6
+```env
+MONGODB_URI=                  # MongoDB Atlas connection string
+NEXTAUTH_URL=                 # http://localhost:3000 (or your domain)
+NEXTAUTH_SECRET=              # openssl rand -base64 32
+AUTH_TRUST_HOST=              # true (production only)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+ANTHROPIC_OAUTH_TOKEN=        # sk-ant-oat01-...
+ANTHROPIC_MODEL=              # claude-opus-4-6
+NEXT_PUBLIC_APP_URL=          # http://localhost:3000
 ```
 
-## Scripts
+## Commands
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start development server |
+| `npm run dev` | Start dev server |
 | `npm run build` | Production build |
-| `npm run lint` | ESLint check |
-| `npx playwright test` | Run E2E tests |
+| `npm run lint` | ESLint |
+| `npx playwright test` | E2E browser tests |
+| `npx tsx src/scripts/seed-kb.ts` | Seed knowledge base |
+
+## Deployment
+
+See [`.claude/decisions/deploy.md`](.claude/decisions/deploy.md) for the full deployment guide.
+
+**Quick deploy after code changes:**
+```bash
+git push && ssh kamal 'cd /projects/resume-builder && git pull && npm install && NODE_OPTIONS="--max-old-space-size=768" npm run build && pm2 restart resume-builder'
+```
+
+## Project Structure
+
+```
+src/
+├── app/(auth)/       # Login page
+├── app/(main)/       # Landing, templates (public)
+├── app/(dashboard)/  # Dashboard, knowledge base (authenticated)
+├── app/(editor)/     # Resume editor, preview (full-screen)
+├── app/api/          # REST API + AI endpoints
+├── components/
+│   ├── ai/           # chat-panel.tsx — main AI interface
+│   ├── layout/       # app-sidebar.tsx (dark sidebar)
+│   ├── resume/       # preview-panel, json-editor, resume-preview
+│   ├── templates/    # classic, modern, minimal
+│   └── ui/           # button, card, input, modal, loading-spinner
+├── lib/services/     # Client-side API service layer
+├── models/           # Mongoose models
+└── scripts/          # seed-kb.ts
+```

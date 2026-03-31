@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ResumeAI - AI-Powered Resume Builder",
+  title: "Agentic Resume — AI-Powered Resume Builder",
   description:
-    "Build and update your professional resume with AI. Chat with Claude to generate, tailor, and optimize your resume content.",
+    "Build and optimize your resume with an AI agent. Agentic Resume uses Claude to generate, tailor, and perfect your resume.",
 };
 
 export default function RootLayout({

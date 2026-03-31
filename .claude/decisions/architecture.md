@@ -1,34 +1,100 @@
-# Architecture Decisions
+# Architecture Decisions — Agentic Resume
 
-## Anthropic API Integration
-- **Direct fetch, NOT SDK**: User's API uses OAuth bearer tokens which the Anthropic SDK doesn't support
-- **Exact headers required** (do not modify):
-  - `Authorization: Bearer <ANTHROPIC_OAUTH_TOKEN>`
-  - `anthropic-version: 2023-06-01`
-  - `anthropic-beta: claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14`
-- **System message format**: `[{ "type": "text", "text": "..." }]` (array, not string)
-- **Streaming**: Uses SSE (text/event-stream) for chat, non-streaming for generate/tailor/ats
+## Stack
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS v4** — CSS-first, `@theme inline` in `globals.css`, no `tailwind.config.js`
+- **MongoDB Atlas** — two connections: native `MongoClient` (Auth.js) + Mongoose (app data)
+- **Auth.js v5** — Google OAuth, MongoDBAdapter, `auth.ts` at project root
+- **Anthropic API** — direct `fetch()` with OAuth bearer token, NOT the SDK
 
-## Database Pattern
-- Two separate MongoDB connections:
-  1. `src/lib/db.ts` — Native `MongoClient` for Auth.js adapter only
-  2. `src/lib/mongoose.ts` — Mongoose for all app data access
-- Both cached on `globalThis` to survive Next.js hot reloads
+## Route Groups
+```
+(auth)      → login only, minimal layout (no sidebar)
+(main)      → public pages (landing, templates)
+(dashboard) → AppSidebar + content (dashboard, knowledge-base)
+(editor)    → AppSidebar + full-screen editor/preview
+```
 
-## Auth Pattern
-- Auth.js v5 with `auth.ts` at project root (required by Auth.js v5)
-- Database session strategy (not JWT) via MongoDBAdapter
-- Middleware protects `/dashboard/*`, `/editor/*`, `/preview/*`
-- Session includes `user.id` via callback augmentation
+## Authentication
+- `middleware.ts` — checks session cookie (Edge-compatible, no MongoDB)
+- Layout `auth()` checks — authoritative, server-side
 
-## Resume Data Model
-- Nested document structure (not referenced)
-- Sub-schemas use `{ _id: false }` to avoid unnecessary ObjectIds
-- Templates: "classic", "modern", "minimal"
-- Chat history stored separately in `ChatHistory` collection per resume
+## Data Models
 
-## Frontend Architecture
-- Route groups: `(auth)`, `(main)`, `(dashboard)` for different layouts
-- Editor page: 3-panel layout (form | preview | AI chat)
-- Auto-save with 2-second debounce
-- Streaming chat UI with SSE parsing
+### Resume
+```typescript
+userId, title, templateId ("classic"|"modern"|"minimal"),
+data: { personalInfo, experience, education, skills, projects, certifications },
+jobDescription: string,  // saved JD per resume
+isPublic, lastEditedAt
+```
+
+### KnowledgeBase (one per user)
+```typescript
+userId (unique),
+profile: { fullName, headline, email, phone, location, website, linkedin, github, bio },
+timeline: [{ type, title, organization, startDate, endDate, current, description, highlights, skills, metrics, tags }],
+skills: [{ name, category, proficiency, yearsOfExperience, tags }],
+projects: [{ name, description, role, technologies, url, highlights, metrics, tags }],
+achievements: [{ title, description, date, issuer, url, tags }]
+```
+
+### ChatHistory (sessions — multiple per resume)
+```typescript
+resumeId, userId,
+title: string,           // auto-named from first message
+messages: [{ role, content, timestamp }]
+// Compound index: { resumeId, userId }
+```
+
+## API Routes
+```
+GET/POST  /api/resumes
+GET/PUT/DELETE  /api/resumes/[id]
+GET/PUT  /api/knowledge-base
+GET/POST  /api/chat-sessions?resumeId=
+GET/PUT/DELETE  /api/chat-sessions/[id]
+POST  /api/ai/chat  (SSE stream)
+POST  /api/ai/generate
+POST  /api/ai/tailor
+POST  /api/ai/ats-score
+```
+
+## Client Service Layer
+All client API calls go through `src/lib/services/`:
+- `resume.ts` — CRUD for resumes
+- `knowledge-base.ts` — fetch/update KB + extractKBData helper
+- `ai.ts` — sendChatMessage, tailorResume, getAtsScore, generateContent
+- `chat-session.ts` — CRUD for chat sessions
+
+## AI Enrichment Format
+Every chat message is enriched client-side before sending:
+```
+[Your Knowledge Base]
+{KB summary JSON}
+
+[Current Resume]
+{resume JSON}
+
+[Instructions]
+- resume-json block → apply to resume
+- kb-json block → apply to knowledge base
+- Ask questions before major changes
+
+User request: {message}
+```
+
+Post-streaming auto-apply:
+- `resume-json`/`json` block with `personalInfo` → `onApplyResumeData()`
+- `kb-json` block with `profile` → `onApplyKBData()`
+
+## Undo System
+- `undoStack: ResumeData[]` (max 50) in editor state
+- Every apply pushes current state before overwriting
+- Covers AI auto-apply AND JSON editor Apply
+
+## Theme System
+- CSS vars in `:root`: `--accent-50` → `--accent-700`
+- Registered via `@theme inline` → `bg-accent-600` etc. usable in Tailwind
+- `ThemeProvider` sets CSS vars on `document.documentElement`
+- 7 presets, persisted in `localStorage`

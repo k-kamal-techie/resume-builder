@@ -125,27 +125,30 @@ function EditorContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-white shrink-0">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-white shrink-0">
+        <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={() => router.push("/dashboard")}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors shrink-0"
             title="Back to dashboard"
           >
-            <LuArrowLeft className="h-5 w-5" />
+            <LuArrowLeft className="h-4 w-4" />
           </button>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="text-lg font-semibold bg-transparent border-none focus:outline-none focus:ring-0 text-gray-900"
+            className="text-sm font-semibold bg-transparent border-none focus:outline-none focus:ring-0 text-slate-900 min-w-0 truncate"
             placeholder="Resume Title"
           />
+          <span className="shrink-0 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-100 text-amber-700 rounded-full">
+            Draft
+          </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={undo}
             disabled={undoStack.length === 0}
@@ -159,7 +162,7 @@ function EditorContent({ id }: { id: string }) {
             {saving ? "Saving..." : "Save"}
           </Button>
           {lastSaved && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-slate-400">
               Saved {lastSaved.toLocaleTimeString()}
             </span>
           )}
