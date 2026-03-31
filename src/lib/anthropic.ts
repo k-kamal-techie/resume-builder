@@ -10,27 +10,28 @@ const SYSTEM_MESSAGE: AnthropicSystemMessage[] = [
 ];
 
 function getHeaders(userApiKey?: string): Record<string, string> {
-  // Standard Anthropic API key (sk-ant-...) — use x-api-key header, no OAuth beta flags
-  if (userApiKey) {
+  const key = userApiKey || process.env.ANTHROPIC_OAUTH_TOKEN;
+  if (!key) {
+    throw new Error("No Anthropic API key configured. Please add your API key in Settings.");
+  }
+
+  const base: Record<string, string> = {
+    "anthropic-version": "2023-06-01",
+    "Content-Type": "application/json",
+  };
+
+  // OAuth tokens (sk-ant-oat...) use Bearer auth + beta flags
+  if (key.startsWith("sk-ant-oat")) {
     return {
-      "x-api-key": userApiKey,
-      "anthropic-version": "2023-06-01",
-      "Content-Type": "application/json",
+      ...base,
+      Authorization: `Bearer ${key}`,
+      "anthropic-beta":
+        "claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14",
     };
   }
 
-  // OAuth token (system default)
-  const token = process.env.ANTHROPIC_OAUTH_TOKEN;
-  if (!token) {
-    throw new Error("Missing ANTHROPIC_OAUTH_TOKEN environment variable");
-  }
-  return {
-    Authorization: `Bearer ${token}`,
-    "anthropic-version": "2023-06-01",
-    "anthropic-beta":
-      "claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14",
-    "Content-Type": "application/json",
-  };
+  // Standard API keys use x-api-key header
+  return { ...base, "x-api-key": key };
 }
 
 function buildMessages(
