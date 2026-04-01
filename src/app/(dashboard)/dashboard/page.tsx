@@ -77,7 +77,7 @@ function DashboardContent() {
       <div className="flex items-center justify-between mb-7">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-0.5">Workspace</p>
-          <h1 className="text-xl font-bold text-slate-900">My Resumes</h1>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">My Resumes</h1>
         </div>
         <Button onClick={() => setShowCreateModal(true)} size="sm">
           <LuPlus className="h-4 w-4 mr-1.5" />
@@ -87,10 +87,10 @@ function DashboardContent() {
 
       {resumes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="h-14 w-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+          <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
             <LuFileText className="h-7 w-7 text-slate-400" />
           </div>
-          <h2 className="text-sm font-semibold text-slate-700 mb-1">No resumes yet</h2>
+          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1">No resumes yet</h2>
           <p className="text-xs text-slate-400 mb-5 max-w-xs">
             Create your first AI-powered resume and let the agent help you build it.
           </p>
@@ -105,11 +105,11 @@ function DashboardContent() {
             <div
               key={resume._id}
               onClick={() => router.push(`/editor/${resume._id}`)}
-              className="group bg-white rounded-2xl border border-slate-200 p-5 cursor-pointer hover:border-accent-300 hover:shadow-md transition-all"
+              className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 cursor-pointer hover:border-accent-300 dark:hover:border-accent-500 hover:shadow-md transition-all"
             >
               {/* Resume preview thumbnail area */}
-              <div className="h-28 bg-slate-50 rounded-xl mb-4 flex items-center justify-center border border-slate-100">
-                <LuFileText className="h-8 w-8 text-slate-300" />
+              <div className="h-28 bg-slate-50 dark:bg-slate-700 rounded-xl mb-4 flex items-center justify-center border border-slate-100 dark:border-slate-600">
+                <LuFileText className="h-8 w-8 text-slate-300 dark:text-slate-500" />
               </div>
 
               <div className="flex items-start justify-between gap-2">
@@ -121,11 +121,11 @@ function DashboardContent() {
                       onBlur={() => handleRenameResume(resume._id, renameValue)}
                       onKeyDown={(e) => { if (e.key === "Enter") handleRenameResume(resume._id, renameValue); if (e.key === "Escape") setRenamingId(null); }}
                       onClick={(e) => e.stopPropagation()}
-                      className="text-sm font-semibold text-slate-900 w-full bg-white border border-slate-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-accent-500"
+                      className="text-sm font-semibold text-slate-900 dark:text-white w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-accent-500"
                     />
                   ) : (
                     <h3
-                      className="text-sm font-semibold text-slate-900 truncate"
+                      className="text-sm font-semibold text-slate-900 dark:text-white truncate"
                       onDoubleClick={(e) => { e.stopPropagation(); setRenamingId(resume._id); setRenameValue(resume.title); }}
                     >
                       {resume.title}
@@ -141,13 +141,13 @@ function DashboardContent() {
                 <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                   <button
                     onClick={(e) => { e.stopPropagation(); router.push(`/editor/${resume._id}`); }}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
                   >
                     <LuPencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDeleteResume(resume._id); }}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 transition-colors"
                   >
                     <LuTrash2 className="h-3.5 w-3.5" />
                   </button>
@@ -168,19 +168,19 @@ function DashboardContent() {
             placeholder="e.g., Software Engineer Resume"
           />
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Template</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Template</label>
             <div className="grid grid-cols-3 gap-3">
               {(["classic", "modern", "minimal"] as TemplateId[]).map((t) => (
                 <button key={t} onClick={() => setNewTemplate(t)}
                   className={`rounded-xl border-2 p-3 text-xs font-semibold capitalize transition-colors ${
-                    newTemplate === t ? "border-accent-600 bg-accent-50 text-accent-700" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                    newTemplate === t ? "border-accent-600 bg-accent-50 dark:bg-accent-600/20 text-accent-700 dark:text-accent-400" : "border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500"
                   }`}>
                   {t}
                 </button>
               ))}
             </div>
           </div>
-          {error && <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+          {error && <p className="text-xs text-red-600 bg-red-50 dark:bg-red-900/30 rounded-lg px-3 py-2">{error}</p>}
           <div className="flex gap-3 pt-1">
             <Button onClick={handleCreateResume} disabled={creating} className="flex-1">
               {creating ? "Creating..." : "Create Resume"}

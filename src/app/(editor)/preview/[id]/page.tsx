@@ -46,15 +46,15 @@ export default function PreviewPage({ params }: { params: Promise<{ id: string }
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-900">
       {/* Toolbar */}
-      <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200 print:hidden">
+      <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-3 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 print:hidden">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => router.back()}>
             <LuArrowLeft className="h-4 w-4 mr-1" />
             Back
           </Button>
-          <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h1>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" onClick={() => router.push(`/editor/${id}`)}>

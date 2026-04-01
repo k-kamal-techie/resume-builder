@@ -7,7 +7,7 @@ const templates = [
     name: "Classic",
     description:
       "Traditional resume layout with clear sections and serif typography. Perfect for corporate and formal applications.",
-    color: "bg-gray-800",
+    color: "bg-slate-800",
   },
   {
     id: "modern",
@@ -21,17 +21,17 @@ const templates = [
     name: "Minimal",
     description:
       "Clean and understated design with plenty of whitespace. Ideal for those who want their content to speak for itself.",
-    color: "bg-gray-400",
+    color: "bg-slate-400",
   },
 ];
 
 export default function TemplatesPage() {
   return (
-    <div className="py-16">
+    <div className="py-16 bg-white dark:bg-slate-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900">Resume Templates</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Resume Templates</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
             Choose a template and customize it with AI-powered content generation.
           </p>
         </div>
@@ -40,27 +40,27 @@ export default function TemplatesPage() {
           {templates.map((template) => (
             <div
               key={template.id}
-              className="rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-slate-800"
             >
               {/* Template preview placeholder */}
               <div className={`${template.color} h-48 flex items-center justify-center`}>
                 <div className="bg-white rounded-lg w-24 h-32 shadow-lg p-2">
-                  <div className="h-2 bg-gray-200 rounded mb-1" />
-                  <div className="h-1 bg-gray-100 rounded mb-1 w-3/4" />
-                  <div className="h-1 bg-gray-100 rounded mb-2 w-1/2" />
+                  <div className="h-2 bg-slate-200 rounded mb-1" />
+                  <div className="h-1 bg-slate-100 rounded mb-1 w-3/4" />
+                  <div className="h-1 bg-slate-100 rounded mb-2 w-1/2" />
                   <div className="space-y-0.5">
                     {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="h-0.5 bg-gray-100 rounded" />
+                      <div key={i} className="h-0.5 bg-slate-100 rounded" />
                     ))}
                   </div>
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900">{template.name}</h3>
-                <p className="text-sm text-gray-600 mt-2">{template.description}</p>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{template.name}</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">{template.description}</p>
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-accent-600 hover:text-blue-800"
+                  className="inline-flex items-center gap-1 mt-4 text-sm font-medium text-accent-600 hover:text-accent-700 dark:hover:text-accent-500"
                 >
                   Use this template
                   <LuArrowRight className="h-4 w-4" />

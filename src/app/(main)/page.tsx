@@ -32,18 +32,18 @@ export default function LandingPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-accent-50 to-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-accent-50 to-white dark:from-slate-900 dark:to-slate-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-100 text-accent-700 text-xs font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-100 dark:bg-accent-600/20 text-accent-700 dark:text-accent-400 text-xs font-medium mb-6">
             <LuSparkles className="h-3 w-3" />
             Powered by Claude AI
           </div>
-          <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+          <h1 className="text-5xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-6xl">
             Build Your Resume
             <br />
             <span className="text-accent-600">With AI Intelligence</span>
           </h1>
-          <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Stop struggling with resume writing. Chat with AI to generate professional content,
             tailor for specific jobs, and get ATS-optimized in minutes.
           </p>
@@ -57,7 +57,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/templates"
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               View Templates
             </Link>
@@ -66,21 +66,21 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section className="py-20">
+      <section className="py-20 bg-white dark:bg-slate-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-3xl font-bold text-center text-slate-900 dark:text-white mb-12">
             Everything You Need to Land the Job
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature) => (
               <div key={feature.title} className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent-100 text-accent-600 mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent-100 dark:bg-accent-600/20 text-accent-600 mb-4">
                   <feature.icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{feature.description}</p>
               </div>
             ))}
           </div>
