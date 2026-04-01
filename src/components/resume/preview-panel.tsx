@@ -35,7 +35,8 @@ export default function PreviewPanel({
     if (!el || exporting) return;
     setExporting(true);
     try {
-      const html2pdf = (await import("html2pdf.js")).default;
+      const mod = await import("html2pdf.js");
+      const html2pdf = mod.default || mod;
       const clone = el.cloneNode(true) as HTMLElement;
       clone.style.transform = "none";
       clone.style.width = "794px";

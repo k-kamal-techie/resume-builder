@@ -17,5 +17,6 @@ declare module "html2pdf.js" {
   }
 
   function html2pdf(): Html2PdfInstance;
+  export = html2pdf;
   export default html2pdf;
 }
