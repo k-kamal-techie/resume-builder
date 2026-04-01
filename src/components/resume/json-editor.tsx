@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import Editor from "react-simple-code-editor";
+import Prism from "prismjs";
+import "prismjs/components/prism-json";
 import type { ResumeData } from "@/types/resume";
 
 interface JsonEditorProps {
@@ -8,13 +11,78 @@ interface JsonEditorProps {
   onChange: (data: ResumeData) => void;
 }
 
+function highlightJSON(code: string): string {
+  return Prism.highlight(code, Prism.languages.json, "json");
+}
+
 export default function JsonEditor({ data, onChange }: JsonEditorProps) {
   const [error, setError] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [dirtyText, setDirtyText] = useState("");
+  const editorRef = useRef<HTMLDivElement>(null);
 
-  // When not dirty, derive display text from props directly
   const jsonText = isDirty ? dirtyText : JSON.stringify(data, null, 2);
+
+  // Inject Prism theme styles once
+  useEffect(() => {
+    const id = "prism-json-theme";
+    if (document.getElementById(id)) return;
+    const style = document.createElement("style");
+    style.id = id;
+    style.textContent = `
+      /* Light mode */
+      .json-editor .token.property { color: #1e293b; }
+      .json-editor .token.string { color: #059669; }
+      .json-editor .token.number { color: #2563eb; }
+      .json-editor .token.boolean,
+      .json-editor .token.null { color: #9333ea; }
+      .json-editor .token.punctuation { color: #94a3b8; }
+      .json-editor .token.operator { color: #94a3b8; }
+
+      /* Dark mode */
+      .dark .json-editor .token.property { color: #e2e8f0; }
+      .dark .json-editor .token.string { color: #34d399; }
+      .dark .json-editor .token.number { color: #60a5fa; }
+      .dark .json-editor .token.boolean,
+      .dark .json-editor .token.null { color: #c084fc; }
+      .dark .json-editor .token.punctuation { color: #64748b; }
+      .dark .json-editor .token.operator { color: #64748b; }
+
+      /* Line numbers */
+      .json-editor-lines {
+        counter-reset: line;
+      }
+      .json-editor-lines .editable-line {
+        counter-increment: line;
+        position: relative;
+        padding-left: 3.5rem !important;
+      }
+      .json-editor-lines .editable-line::before {
+        content: counter(line);
+        position: absolute;
+        left: 0;
+        width: 2.5rem;
+        text-align: right;
+        padding-right: 0.75rem;
+        color: #cbd5e1;
+        user-select: none;
+        pointer-events: none;
+      }
+      .dark .json-editor-lines .editable-line::before {
+        color: #475569;
+      }
+
+      /* Editor textarea styling */
+      .json-editor textarea {
+        outline: none !important;
+        caret-color: #475569;
+      }
+      .dark .json-editor textarea {
+        caret-color: #94a3b8;
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
 
   const handleChange = useCallback((value: string) => {
     setDirtyText(value);
@@ -77,12 +145,22 @@ export default function JsonEditor({ data, onChange }: JsonEditorProps) {
           {error}
         </div>
       )}
-      <textarea
-        value={jsonText}
-        onChange={(e) => handleChange(e.target.value)}
-        className="flex-1 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-green-400 font-mono text-xs p-4 resize-none focus:outline-none leading-relaxed"
-        spellCheck={false}
-      />
+      <div ref={editorRef} className="json-editor flex-1 overflow-auto">
+        <Editor
+          value={jsonText}
+          onValueChange={handleChange}
+          highlight={highlightJSON}
+          padding={16}
+          className="json-editor-lines"
+          textareaClassName="focus:outline-none"
+          style={{
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            fontSize: "0.75rem",
+            lineHeight: "1.625",
+            minHeight: "100%",
+          }}
+        />
+      </div>
     </div>
   );
 }
