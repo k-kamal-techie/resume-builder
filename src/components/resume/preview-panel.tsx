@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import ResumePreview from "./resume-preview";
 import JsonEditor from "./json-editor";
 import type { ResumeData, TemplateId } from "@/types/resume";
-import { LuEye, LuCode, LuDownload } from "react-icons/lu";
+import { LuEye, LuCode, LuDownload, LuLoader } from "react-icons/lu";
 
 type TabMode = "preview" | "json-editor";
 
@@ -27,8 +28,50 @@ export default function PreviewPanel({
   onViewModeChange,
   onDataChange,
 }: PreviewPanelProps) {
+  const [exporting, setExporting] = useState(false);
+
   const handleExportPDF = () => {
-    window.print();
+    const el = document.getElementById("resume-print-area");
+    if (!el || exporting) return;
+    setExporting(true);
+
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:none;";
+    document.body.appendChild(iframe);
+    const doc = iframe.contentDocument;
+    if (!doc) { setExporting(false); return; }
+
+    const clone = el.cloneNode(true) as HTMLElement;
+    clone.style.transform = "none";
+    clone.style.width = "100%";
+    clone.style.boxShadow = "none";
+    clone.style.background = "white";
+    clone.removeAttribute("id");
+
+    // Copy stylesheets into iframe for Tailwind classes
+    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map((s) => s.outerHTML).join("\n");
+
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head>${styles}<style>
+@page { size: A4; margin: 12mm 10mm; }
+html, body { margin: 0; padding: 0; background: white; }
+.resume-section { break-inside: avoid; }
+</style></head><body>${clone.outerHTML}</body></html>`);
+    doc.close();
+
+    const doPrint = () => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      setTimeout(() => { iframe.remove(); setExporting(false); }, 1000);
+    };
+
+    // Wait for stylesheets to load, then print
+    iframe.onload = () => setTimeout(doPrint, 300);
+    // Fallback if onload doesn't fire
+    setTimeout(() => {
+      if (iframe.parentElement) doPrint();
+    }, 2000);
   };
 
   return (
@@ -56,10 +99,15 @@ export default function PreviewPanel({
         <div className="ml-auto flex items-center gap-1 pr-2">
           <button
             onClick={handleExportPDF}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            disabled={exporting}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
             title="Export PDF"
           >
-            <LuDownload className="h-3.5 w-3.5" />
+            {exporting ? (
+              <LuLoader className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <LuDownload className="h-3.5 w-3.5" />
+            )}
             PDF
           </button>
         </div>

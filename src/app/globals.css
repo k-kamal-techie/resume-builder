@@ -36,42 +36,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Print styles — only show the resume, hide everything else */
-@media print {
-  /* Hide everything except the resume */
-  body * {
-    visibility: hidden;
-  }
-  #resume-print-container,
-  #resume-print-container * {
-    visibility: visible;
-  }
-  /* Position resume at top-left, filling the page */
-  #resume-print-container {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: auto;
-    background: white !important;
-    padding: 0 !important;
-    z-index: 99999;
-  }
-  #resume-print-container > div {
-    width: 100% !important;
-    min-height: auto !important;
-  }
-  #resume-print-area {
-    transform: none !important;
-    width: 100% !important;
-    box-shadow: none !important;
-    min-height: auto !important;
-  }
-  @page {
-    size: A4;
-    margin: 12mm 10mm;
-  }
-  .resume-section {
-    break-inside: avoid;
-  }
+/* Print: resume-section class used in iframe print for page break control */
+.resume-section {
+  break-inside: avoid;
 }
