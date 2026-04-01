@@ -51,24 +51,7 @@ export default function PreviewPanel({
         })}
         <div className="ml-auto flex items-center gap-1 pr-2">
           <button
-            onClick={() => {
-              const resumeEl = document.getElementById("resume-print-area");
-              if (!resumeEl) return;
-              const win = window.open("", "_blank");
-              if (!win) return;
-              // Clone content and remove inline transform (print at full A4 size)
-              const clone = resumeEl.cloneNode(true) as HTMLElement;
-              clone.style.transform = "none";
-              clone.style.width = "794px";
-              clone.style.minHeight = "1123px";
-              // Copy all stylesheets for template rendering
-              const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-                .map((el) => el.outerHTML)
-                .join("\n");
-              win.document.write(`<!DOCTYPE html><html><head>${styles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:white}</style></head><body>${clone.outerHTML}</body></html>`);
-              win.document.close();
-              win.onload = () => { win.print(); win.close(); };
-            }}
+            onClick={() => window.print()}
             className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
             title="Export PDF"
           >
