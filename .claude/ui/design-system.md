@@ -25,18 +25,40 @@ Exception: Resume templates (classic, modern, minimal) use hardcoded colors sinc
 
 ### Slate (Layout & Neutral)
 ```
-bg-slate-900     Sidebar background
-bg-slate-800     Sidebar hover items
-bg-slate-700     Agent avatar background
+bg-slate-900     Sidebar background / dark mode page bg
+bg-slate-800     Sidebar hover items / dark mode cards, panels
+bg-slate-700     Agent avatar / dark mode thumbnail areas, inputs
 bg-slate-50      AI message bubbles, card hover backgrounds
-text-slate-900   Primary headings
-text-slate-700   Body text
-text-slate-500   Section labels, secondary text
+text-slate-900   Primary headings (dark: text-white)
+text-slate-700   Body text (dark: text-slate-200)
+text-slate-500   Section labels, secondary text (dark: text-slate-400)
 text-slate-400   Muted text, timestamps, placeholders
 text-slate-400   Inactive sidebar nav items
-border-slate-100 Light dividers (within panels)
-border-slate-200 Card borders, input borders
+border-slate-100 Light dividers (dark: border-slate-700)
+border-slate-200 Card borders, input borders (dark: border-slate-700)
 ```
+
+### Dark Mode Pattern
+Every page and component must have `dark:` variants. Standard mappings:
+```
+bg-white           → dark:bg-slate-800   (cards, panels)
+bg-slate-50        → dark:bg-slate-900   (page backgrounds)
+bg-slate-100       → dark:bg-slate-800   (empty states, icon containers)
+bg-accent-50       → dark:bg-accent-600/20 (selected states)
+bg-accent-100      → dark:bg-accent-600/20 (badges, highlights)
+text-slate-900     → dark:text-white     (headings)
+text-slate-700     → dark:text-slate-200 (body text)
+text-slate-600     → dark:text-slate-300 or dark:text-slate-400 (descriptions)
+border-slate-200   → dark:border-slate-700 (card borders)
+border-slate-100   → dark:border-slate-600 or dark:border-slate-700 (inner borders)
+border-slate-300   → dark:border-slate-600 (input borders)
+hover:bg-slate-50  → dark:hover:bg-slate-700 (button hovers)
+hover:bg-slate-100 → dark:hover:bg-slate-700 (action hovers)
+hover:bg-red-50    → dark:hover:bg-red-900/30 (danger hovers)
+bg-red-50          → dark:bg-red-900/30 (error backgrounds)
+```
+
+**Exception**: Resume templates (classic, modern, minimal) do NOT use dark mode — they always render on white paper for PDF output.
 
 ### System Colors
 ```
@@ -183,10 +205,10 @@ Page title:    text-xl font-bold text-slate-900
 
 ### Resume Cards
 ```
-bg-white rounded-2xl border border-slate-200
-hover: border-accent-300 shadow-md
-Thumbnail area: h-28 bg-slate-50 rounded-xl border border-slate-100
-Title: text-sm font-semibold text-slate-900
+bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700
+hover: border-accent-300 dark:border-accent-500 shadow-md
+Thumbnail area: h-28 bg-slate-50 dark:bg-slate-700 rounded-xl border border-slate-100 dark:border-slate-600
+Title: text-sm font-semibold text-slate-900 dark:text-white
 Meta: text-xs text-slate-400
 Actions: opacity-0 → group-hover:opacity-100
 ```
@@ -209,28 +231,28 @@ Right: Undo (ghost) + Save (primary)
 ### Button Variants
 ```
 primary:   bg-accent-600 text-white hover:bg-accent-700 focus:ring-accent-500
-secondary: bg-gray-100 text-gray-900 hover:bg-gray-200
-outline:   border border-gray-300 text-gray-700 hover:bg-gray-50
-ghost:     text-gray-700 hover:bg-gray-100
+secondary: bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-600
+outline:   border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800
+ghost:     text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800
 danger:    bg-red-600 text-white hover:bg-red-700
 ```
 
 ### Cards
 ```
-bg-white rounded-2xl border border-slate-200
-Interactive: hover:border-accent-300 hover:shadow-md cursor-pointer
+bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700
+Interactive: hover:border-accent-300 dark:hover:border-accent-500 hover:shadow-md cursor-pointer
 ```
 
 ### Modals
 ```
 Backdrop: fixed inset-0 bg-black/50 z-50
-Panel: bg-white rounded-2xl shadow-2xl max-w-lg p-5
-Title: text-sm font-semibold text-slate-900
+Panel: bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg p-5
+Title: text-sm font-semibold text-slate-900 dark:text-white
 ```
 
 ### Inputs
 ```
-Normal: border-gray-300 focus:ring-2 focus:ring-accent-500
+Normal: border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-accent-500
 Error:  border-red-500 + text-xs text-red-500
 ```
 
@@ -239,11 +261,11 @@ Error:  border-red-500 + text-xs text-red-500
 ## Login Page
 
 ```
-bg-slate-50 min-h-screen
+bg-slate-50 dark:bg-slate-900 min-h-screen
 Brand: h-12 w-12 rounded-2xl bg-accent-600 shadow-lg shadow-accent-600/25
-Title: "Agentic Resume" text-2xl font-bold text-slate-900
-Card: bg-white rounded-2xl border border-slate-200 shadow-sm
-OAuth buttons: rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300
+Title: "Agentic Resume" text-2xl font-bold text-slate-900 dark:text-white
+Card: bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm
+OAuth buttons: rounded-xl border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700
 ```
 
 ---

@@ -61,11 +61,13 @@ middleware.ts        # Cookie-based route protection
 ## Design System
 See `.claude/ui/design-system.md` for full reference. Key rules:
 - All primary accent uses `accent-*` classes (NOT `blue-*` directly)
+- All pages and components must have `dark:` variants (e.g., `bg-white dark:bg-slate-800`, `text-slate-900 dark:text-white`)
+- Exception: Resume templates (classic, modern, minimal) render on white paper — no dark mode
 - Sidebar: `bg-slate-900`, nav items use `text-slate-400` inactive / `bg-accent-600 text-white` active
 - Chat bubbles: agent = `bg-slate-50 border-slate-100`, user = `bg-accent-600 text-white`
 - Typography: section labels = `text-xs font-semibold uppercase tracking-wider text-slate-500`
-- Borders: `border-slate-100` (light) or `border-slate-200` (medium)
-- Cards: `bg-white rounded-2xl border border-slate-200`
+- Borders: `border-slate-100` (light) or `border-slate-200` (medium), dark: `border-slate-700`
+- Cards: `bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700`
 
 ## Code Conventions
 - Use `@/*` import alias for all `src/` imports
