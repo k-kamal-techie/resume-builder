@@ -60,7 +60,10 @@ html, body { margin: 0; padding: 0; background: white; }
 </style></head><body>${clone.outerHTML}</body></html>`);
     doc.close();
 
+    let printed = false;
     const doPrint = () => {
+      if (printed) return;
+      printed = true;
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
       setTimeout(() => { iframe.remove(); setExporting(false); }, 1000);
