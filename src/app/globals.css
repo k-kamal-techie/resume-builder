@@ -38,23 +38,32 @@ body {
 
 /* Print styles — only show the resume, hide everything else */
 @media print {
-  body > * {
-    display: none !important;
+  /* Hide all elements but keep layout flow */
+  body * {
+    visibility: hidden;
   }
+  /* Reveal the resume container and all its descendants */
+  #resume-print-container,
+  #resume-print-container * {
+    visibility: visible;
+  }
+  /* Position resume at top-left of page */
   #resume-print-container {
-    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
     background: white !important;
     padding: 0 !important;
+  }
+  #resume-print-container > div {
+    width: 100% !important;
     min-height: auto !important;
   }
   #resume-print-area {
     transform: none !important;
     width: 100% !important;
     box-shadow: none !important;
-    min-height: auto !important;
-  }
-  #resume-print-container > div {
-    width: 100% !important;
     min-height: auto !important;
   }
   @page {
