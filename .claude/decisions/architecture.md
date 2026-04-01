@@ -11,7 +11,7 @@
 ```
 (auth)      → login only, minimal layout (no sidebar)
 (main)      → public pages (landing, templates)
-(dashboard) → AppSidebar + content (dashboard, knowledge-base)
+(dashboard) → AppSidebar + content (dashboard, knowledge-base, settings)
 (editor)    → AppSidebar + full-screen editor/preview
 ```
 
@@ -47,6 +47,14 @@ messages: [{ role, content, timestamp }]
 // Compound index: { resumeId, userId }
 ```
 
+### UserSettings (one per user)
+```typescript
+userId (unique, indexed),
+anthropicToken: string,  // AES-256-GCM encrypted
+anthropicModel: string,  // default "claude-sonnet-4-6"
+createdAt, updatedAt
+```
+
 ## API Routes
 ```
 GET/POST  /api/resumes
@@ -58,6 +66,7 @@ POST  /api/ai/chat  (SSE stream)
 POST  /api/ai/generate
 POST  /api/ai/tailor
 POST  /api/ai/ats-score
+GET/PUT  /api/user/settings
 ```
 
 ## Client Service Layer
@@ -66,6 +75,23 @@ All client API calls go through `src/lib/services/`:
 - `knowledge-base.ts` — fetch/update KB + extractKBData helper
 - `ai.ts` — sendChatMessage, tailorResume, getAtsScore, generateContent
 - `chat-session.ts` — CRUD for chat sessions
+- `user-settings.ts` — fetch/update user API key and model
+
+## Per-User API Settings
+- `getUserAnthropicConfig(userId)` resolves token + model: user DB → env fallback → `NoTokenConfiguredError`
+- Tokens encrypted with AES-256-GCM (`src/lib/encryption.ts`), `ENCRYPTION_KEY` env var
+- API routes catch `NoTokenConfiguredError` → return 422 with `NO_API_TOKEN_CONFIGURED`
+- Chat panel detects this error → shows settings link
+
+## Rate Limiting
+- In-memory sliding window (`src/lib/rate-limit.ts`)
+- Per-route: chat 15/60s, tailor/ats 5/60s, generate 10/60s
+
+## JSON Editor
+- `react-simple-code-editor` + Prism.js for syntax highlighting
+- Custom light/dark theme (slate-based colors matching design system)
+- Line numbers via CSS counters
+- Shared by Knowledge Base page and resume editor "Edit JSON" tab
 
 ## AI Enrichment Format
 Every chat message is enriched client-side before sending:

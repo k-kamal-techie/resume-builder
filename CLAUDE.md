@@ -25,9 +25,9 @@ src/
 │   └── api/         # REST API routes
 ├── components/
 │   ├── ai/          # AI chat system (7 files: panel, header, messages, input, message-item, types, helpers)
-│   ├── layout/      # app-sidebar.tsx (dark sidebar), navbar/sidebar (no-ops)
+│   ├── layout/      # app-sidebar.tsx (dark sidebar), top-navbar.tsx, footer.tsx
 │   ├── providers/   # session-provider, theme-provider
-│   ├── resume/      # preview-panel, resume-preview, json-editor
+│   ├── resume/      # preview-panel, resume-preview, json-editor (Prism.js code editor)
 │   ├── templates/   # classic, modern, minimal
 │   └── ui/          # button, card, input, modal, loading-spinner
 ├── lib/
@@ -44,7 +44,7 @@ src/
 │   │   └── user-settings.ts # User settings (API key, model)
 │   └── validations/         # Zod schemas
 ├── models/          # User, Resume, KnowledgeBase, ChatHistory, UserSettings
-├── scripts/         # seed-kb.ts (one-time KB seed from portfolio)
+├── scripts/         # seed-kb.ts (KB seed from portfolio data)
 └── types/           # resume.ts, knowledge-base.ts, ai.ts, next-auth.d.ts
 auth.ts              # Root-level Auth.js v5 config
 middleware.ts        # Cookie-based route protection
@@ -54,7 +54,7 @@ middleware.ts        # Cookie-based route protection
 - **Two MongoDB connections**: Native `MongoClient` (`src/lib/db.ts`) for Auth.js adapter + Mongoose (`src/lib/mongoose.ts`) for app data.
 - **Auth.js v5 config at project root**: `auth.ts` must be at root, not inside `src/`.
 - **Route protection**: Cookie-based middleware (`middleware.ts`) + server-side `auth()` check in layout. Edge runtime can't access MongoDB, so middleware checks session cookie presence only.
-- **Anthropic API** (`src/lib/anthropic.ts`): Direct `fetch()` — NOT the SDK. System message is MANDATORY and LOCKED. See `.claude/skills/anthropic-api.md`. Supports both OAuth bearer tokens (`Authorization: Bearer`) and standard API keys (`x-api-key` for `sk-ant-*` prefix). Token and model are resolved per-user via `getUserAnthropicConfig()` with fallback to env vars.
+- **Anthropic API** (`src/lib/anthropic.ts`): Direct `fetch()` with OAuth bearer token — NOT the SDK. System message is MANDATORY and LOCKED. See `.claude/skills/anthropic-api.md`. Token and model are resolved per-user via `getUserAnthropicConfig()` with fallback to env vars.
 - **Per-user API settings**: Each user stores their own Anthropic API key (AES-256-GCM encrypted) and model preference in `UserSettings` collection. Settings page at `/settings`. If no token configured, AI features show error with link to settings.
 - **Layout**: No top navbar. A single dark `AppSidebar` (`src/components/layout/app-sidebar.tsx`) handles branding, navigation, user profile, theme picker, and sign out for all authenticated pages.
 - **Editor layout**: Full-screen 3-panel — AppSidebar + Chat (flex-1) + Preview (w-[420px]). No forms — all editing via AI chat or JSON editor. Explicit save only (no auto-save).
