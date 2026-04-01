@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import ResumePreview from "./resume-preview";
 import JsonEditor from "./json-editor";
 import type { ResumeData, TemplateId } from "@/types/resume";
-import { LuEye, LuCode, LuDownload } from "react-icons/lu";
+import { LuEye, LuCode, LuDownload, LuLoader } from "react-icons/lu";
 
 type TabMode = "preview" | "json-editor";
 
@@ -27,6 +28,37 @@ export default function PreviewPanel({
   onViewModeChange,
   onDataChange,
 }: PreviewPanelProps) {
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportPDF = async () => {
+    const el = document.getElementById("resume-print-area");
+    if (!el || exporting) return;
+    setExporting(true);
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      const clone = el.cloneNode(true) as HTMLElement;
+      clone.style.transform = "none";
+      clone.style.width = "794px";
+      clone.style.boxShadow = "none";
+
+      await html2pdf()
+        .set({
+          margin: 0,
+          filename: `${data.personalInfo?.fullName || "resume"}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, width: 794 },
+          jsPDF: { unit: "px", format: [794, 1123], hotfixes: ["px_scaling"] },
+          pagebreak: { mode: ["avoid-all"] },
+        })
+        .from(clone)
+        .save();
+    } catch (err) {
+      console.error("PDF export failed:", err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full border-l border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
       {/* Tab bar */}
@@ -51,34 +83,16 @@ export default function PreviewPanel({
         })}
         <div className="ml-auto flex items-center gap-1 pr-2">
           <button
-            onClick={() => {
-              const el = document.getElementById("resume-print-area");
-              if (!el) return;
-              const iframe = document.createElement("iframe");
-              iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:none;";
-              document.body.appendChild(iframe);
-              const doc = iframe.contentDocument;
-              if (!doc) return;
-              const clone = el.cloneNode(true) as HTMLElement;
-              clone.style.transform = "none";
-              clone.style.width = "794px";
-              clone.style.minHeight = "1123px";
-              clone.style.boxShadow = "none";
-              const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-                .map((s) => s.outerHTML).join("\n");
-              doc.open();
-              doc.write(`<!DOCTYPE html><html><head>${styles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:white}</style></head><body>${clone.outerHTML}</body></html>`);
-              doc.close();
-              setTimeout(() => {
-                iframe.contentWindow?.focus();
-                iframe.contentWindow?.print();
-                setTimeout(() => iframe.remove(), 1000);
-              }, 500);
-            }}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            onClick={handleExportPDF}
+            disabled={exporting}
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-50"
             title="Export PDF"
           >
-            <LuDownload className="h-3.5 w-3.5" />
+            {exporting ? (
+              <LuLoader className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <LuDownload className="h-3.5 w-3.5" />
+            )}
             PDF
           </button>
         </div>
