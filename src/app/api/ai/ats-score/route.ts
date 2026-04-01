@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
-import { getUserAISettings } from "@/lib/getUserAISettings";
 
 const SYSTEM_PROMPT = `You are an ATS (Applicant Tracking System) expert. You analyze resumes against job descriptions and provide detailed compatibility scores.
 
@@ -48,13 +47,9 @@ Return as JSON:
   "strongPoints": ["strength1", "..."]
 }`;
 
-    const aiSettings = await getUserAISettings(session.user.id);
-
     const response = await sendMessage({
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: prompt }],
-      apiKey: aiSettings.apiKey,
-      model: aiSettings.model,
     });
 
     const content = response.content[0]?.text || "";

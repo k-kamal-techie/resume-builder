@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
-import { getUserAISettings } from "@/lib/getUserAISettings";
 
 const SYSTEM_PROMPT = `You are an expert resume content generator. Generate professional, ATS-friendly resume content based on the user's input.
 
@@ -51,13 +50,9 @@ export async function POST(req: NextRequest) {
       prompt += `\n\nAdditional context about the resume:\n${context}`;
     }
 
-    const aiSettings = await getUserAISettings(session.user.id);
-
     const response = await sendMessage({
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: prompt }],
-      apiKey: aiSettings.apiKey,
-      model: aiSettings.model,
     });
 
     const content = response.content[0]?.text || "";

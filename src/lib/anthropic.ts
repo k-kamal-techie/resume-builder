@@ -9,29 +9,19 @@ const SYSTEM_MESSAGE: AnthropicSystemMessage[] = [
   },
 ];
 
-function getHeaders(userApiKey?: string): Record<string, string> {
-  const key = userApiKey || process.env.ANTHROPIC_OAUTH_TOKEN;
-  if (!key) {
-    throw new Error("No Anthropic API key configured. Please add your API key in Settings.");
+function getHeaders(): Record<string, string> {
+  const token = process.env.ANTHROPIC_OAUTH_TOKEN;
+  if (!token) {
+    throw new Error("Missing ANTHROPIC_OAUTH_TOKEN environment variable");
   }
 
-  const base: Record<string, string> = {
+  return {
+    Authorization: `Bearer ${token}`,
     "anthropic-version": "2023-06-01",
+    "anthropic-beta":
+      "claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14",
     "Content-Type": "application/json",
   };
-
-  // OAuth tokens (sk-ant-oat...) use Bearer auth + beta flags
-  if (key.startsWith("sk-ant-oat")) {
-    return {
-      ...base,
-      Authorization: `Bearer ${key}`,
-      "anthropic-beta":
-        "claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14",
-    };
-  }
-
-  // Standard API keys use x-api-key header
-  return { ...base, "x-api-key": key };
 }
 
 function buildMessages(
@@ -56,17 +46,14 @@ export async function sendMessage({
   messages,
   model,
   maxTokens = 4096,
-  apiKey,
 }: {
   system?: string;
   messages: AnthropicMessage[];
   model?: string;
   maxTokens?: number;
-  apiKey?: string;
 }): Promise<AnthropicResponse> {
-  const resolvedModel = model || process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
   const body = {
-    model: resolvedModel,
+    model: model || process.env.ANTHROPIC_MODEL || "claude-opus-4-6",
     max_tokens: maxTokens,
     system: SYSTEM_MESSAGE,
     messages: buildMessages(system, messages),
@@ -75,7 +62,7 @@ export async function sendMessage({
 
   const response = await fetch(ANTHROPIC_API_URL, {
     method: "POST",
-    headers: getHeaders(apiKey),
+    headers: getHeaders(),
     body: JSON.stringify(body),
   });
 
@@ -92,17 +79,14 @@ export async function streamMessage({
   messages,
   model,
   maxTokens = 4096,
-  apiKey,
 }: {
   system?: string;
   messages: AnthropicMessage[];
   model?: string;
   maxTokens?: number;
-  apiKey?: string;
 }): Promise<Response> {
-  const resolvedModel = model || process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
   const body = {
-    model: resolvedModel,
+    model: model || process.env.ANTHROPIC_MODEL || "claude-opus-4-6",
     max_tokens: maxTokens,
     system: SYSTEM_MESSAGE,
     messages: buildMessages(system, messages),
@@ -111,7 +95,7 @@ export async function streamMessage({
 
   const response = await fetch(ANTHROPIC_API_URL, {
     method: "POST",
-    headers: getHeaders(apiKey),
+    headers: getHeaders(),
     body: JSON.stringify(body),
   });
 

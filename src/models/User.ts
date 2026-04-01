@@ -5,8 +5,6 @@ export interface IUser extends Document {
   email: string;
   emailVerified?: Date;
   image?: string;
-  anthropicApiKey?: string;
-  aiModel?: string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -15,8 +13,6 @@ const UserSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     emailVerified: { type: Date },
     image: { type: String },
-    anthropicApiKey: { type: String, select: false }, // excluded from default queries
-    aiModel: { type: String, default: "claude-sonnet-4-6" },
   },
   { timestamps: true }
 );

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { streamMessage } from "@/lib/anthropic";
-import { getUserAISettings } from "@/lib/getUserAISettings";
 // Chat persistence is handled client-side via /api/chat-sessions
 
 const SYSTEM_PROMPT = `You are an expert professional resume writer, career coach, and personal knowledge manager. You help users build and manage their professional profile and craft compelling, ATS-friendly resumes.
@@ -39,14 +38,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const aiSettings = await getUserAISettings(session.user.id);
-    if (!aiSettings.apiKey && !process.env.ANTHROPIC_OAUTH_TOKEN) {
-      return NextResponse.json(
-        { error: "No Anthropic API key configured. Please add your API key in Settings." },
-        { status: 400 }
-      );
-    }
-
     const messages = [
       ...(history || []).map((msg: { role: string; content: string }) => ({
         role: msg.role as "user" | "assistant",
@@ -58,8 +49,6 @@ export async function POST(req: NextRequest) {
     const response = await streamMessage({
       system: SYSTEM_PROMPT,
       messages,
-      apiKey: aiSettings.apiKey,
-      model: aiSettings.model,
     });
 
     return new Response(response.body, {
