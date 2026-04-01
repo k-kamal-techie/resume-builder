@@ -30,34 +30,50 @@ export default function PreviewPanel({
 }: PreviewPanelProps) {
   const [exporting, setExporting] = useState(false);
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = () => {
     const el = document.getElementById("resume-print-area");
     if (!el || exporting) return;
     setExporting(true);
-    try {
-      const mod = await import("html2pdf.js");
-      const html2pdf = mod.default || mod;
-      const clone = el.cloneNode(true) as HTMLElement;
-      clone.style.transform = "none";
-      clone.style.width = "794px";
-      clone.style.boxShadow = "none";
 
-      await html2pdf()
-        .set({
-          margin: 0,
-          filename: `${data.personalInfo?.fullName || "resume"}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, width: 794 },
-          jsPDF: { unit: "px", format: [794, 1123], hotfixes: ["px_scaling"] },
-          pagebreak: { mode: ["avoid-all"] },
-        })
-        .from(clone)
-        .save();
-    } catch (err) {
-      console.error("PDF export failed:", err);
-    } finally {
-      setExporting(false);
-    }
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:none;";
+    document.body.appendChild(iframe);
+    const doc = iframe.contentDocument;
+    if (!doc) { setExporting(false); return; }
+
+    const clone = el.cloneNode(true) as HTMLElement;
+    clone.style.transform = "none";
+    clone.style.width = "794px";
+    clone.style.boxShadow = "none";
+    clone.style.background = "white";
+
+    // Copy all stylesheets into iframe
+    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map((s) => s.outerHTML).join("\n");
+
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head>${styles}<style>
+@page { size: A4; margin: 0; }
+html, body { margin: 0; padding: 0; background: white; }
+</style></head><body>${clone.outerHTML}</body></html>`);
+    doc.close();
+
+    // Wait for stylesheets to load, then print
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => { iframe.remove(); setExporting(false); }, 1000);
+      }, 300);
+    };
+    // Fallback if onload doesn't fire (already loaded)
+    setTimeout(() => {
+      if (iframe.parentElement) {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => { iframe.remove(); setExporting(false); }, 1000);
+      }
+    }, 1500);
   };
 
   return (
