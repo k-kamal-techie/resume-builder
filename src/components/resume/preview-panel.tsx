@@ -51,7 +51,30 @@ export default function PreviewPanel({
         })}
         <div className="ml-auto flex items-center gap-1 pr-2">
           <button
-            onClick={() => window.print()}
+            onClick={() => {
+              const el = document.getElementById("resume-print-area");
+              if (!el) return;
+              const iframe = document.createElement("iframe");
+              iframe.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:none;";
+              document.body.appendChild(iframe);
+              const doc = iframe.contentDocument;
+              if (!doc) return;
+              const clone = el.cloneNode(true) as HTMLElement;
+              clone.style.transform = "none";
+              clone.style.width = "794px";
+              clone.style.minHeight = "1123px";
+              clone.style.boxShadow = "none";
+              const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+                .map((s) => s.outerHTML).join("\n");
+              doc.open();
+              doc.write(`<!DOCTYPE html><html><head>${styles}<style>@page{size:A4;margin:0}body{margin:0;padding:0;background:white}</style></head><body>${clone.outerHTML}</body></html>`);
+              doc.close();
+              setTimeout(() => {
+                iframe.contentWindow?.focus();
+                iframe.contentWindow?.print();
+                setTimeout(() => iframe.remove(), 1000);
+              }, 500);
+            }}
             className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
             title="Export PDF"
           >
