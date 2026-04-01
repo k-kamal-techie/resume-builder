@@ -8,6 +8,7 @@ import {
   LuBrain,
   LuPlus,
   LuBolt,
+  LuSettings,
 } from "react-icons/lu";
 
 export default function AppSidebar() {
@@ -61,6 +62,7 @@ export default function AppSidebar() {
           {[
             { href: "/dashboard", label: "My Resumes", icon: LuFileText },
             { href: "/knowledge-base", label: "Knowledge Base", icon: LuBrain },
+            { href: "/settings", label: "Settings", icon: LuSettings },
           ].map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { streamMessage } from "@/lib/anthropic";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { getUserAnthropicConfig, NoTokenConfiguredError } from "@/lib/user-anthropic-config";
 
 const SYSTEM_PROMPT = `You are an expert professional resume writer, career coach, and personal knowledge manager. You help users build and manage their professional profile and craft compelling, ATS-friendly resumes.
 
@@ -30,6 +31,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Fetch user's API credentials
+    let anthropicConfig;
+    try {
+      anthropicConfig = await getUserAnthropicConfig(session.user.id);
+    } catch (err) {
+      if (err instanceof NoTokenConfiguredError) {
+        return NextResponse.json({ error: "NO_API_TOKEN_CONFIGURED" }, { status: 422 });
+      }
+      throw err;
+    }
+
     const rl = checkRateLimit(`${session.user.id}:chat`, { limit: 15, windowSeconds: 60 });
     if (!rl.allowed) return rateLimitResponse(rl);
 
@@ -52,6 +64,8 @@ export async function POST(req: NextRequest) {
     const response = await streamMessage({
       system: SYSTEM_PROMPT,
       messages,
+      token: anthropicConfig.token,
+      model: anthropicConfig.model,
     });
 
     return new Response(response.body, {

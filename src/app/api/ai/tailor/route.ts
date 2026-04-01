@@ -3,6 +3,7 @@ import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { extractJSON } from "@/lib/json-extract";
+import { getUserAnthropicConfig, NoTokenConfiguredError } from "@/lib/user-anthropic-config";
 
 const SYSTEM_PROMPT = `You are an expert resume tailoring specialist. You analyze job descriptions and modify resumes to better match the role while keeping content truthful.
 
@@ -20,6 +21,16 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    let anthropicConfig;
+    try {
+      anthropicConfig = await getUserAnthropicConfig(session.user.id);
+    } catch (err) {
+      if (err instanceof NoTokenConfiguredError) {
+        return NextResponse.json({ error: "NO_API_TOKEN_CONFIGURED" }, { status: 422 });
+      }
+      throw err;
     }
 
     const rl = checkRateLimit(`${session.user.id}:tailor`, { limit: 5, windowSeconds: 60 });
@@ -56,6 +67,8 @@ Return as JSON:
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: prompt }],
       maxTokens: 8192,
+      token: anthropicConfig.token,
+      model: anthropicConfig.model,
     });
 
     const content = response.content[0]?.text || "";

@@ -228,7 +228,11 @@ export default function ChatPanel({
       }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : "Unknown error";
-      setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${errMsg}`, timestamp: new Date().toISOString() }]);
+      const isNoToken = errMsg.includes("NO_API_TOKEN_CONFIGURED");
+      const displayMsg = isNoToken
+        ? "**API key not configured.** You need to add your Anthropic API key before using AI features.\n\n[Go to Settings](/settings) to add your API key."
+        : `Error: ${errMsg}`;
+      setMessages((prev) => [...prev, { role: "assistant", content: displayMsg, timestamp: new Date().toISOString() }]);
     } finally { setIsLoading(false); }
   }
 
@@ -247,8 +251,13 @@ export default function ChatPanel({
         { role: "user", content: action === "tailor" ? "/tailor" : "/ats", timestamp: ts },
         { role: "assistant", content, timestamp: ts },
       ]);
-    } catch {
-      setMessages((prev) => [...prev, { role: "assistant", content: "Failed to process. Please try again.", timestamp: new Date().toISOString() }]);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "";
+      const isNoToken = errMsg.includes("NO_API_TOKEN_CONFIGURED");
+      const displayMsg = isNoToken
+        ? "**API key not configured.** [Go to Settings](/settings) to add your API key."
+        : "Failed to process. Please try again.";
+      setMessages((prev) => [...prev, { role: "assistant", content: displayMsg, timestamp: new Date().toISOString() }]);
     } finally { setIsLoading(false); }
   }
 

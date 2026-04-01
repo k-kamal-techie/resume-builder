@@ -9,19 +9,27 @@ const SYSTEM_MESSAGE: AnthropicSystemMessage[] = [
   },
 ];
 
-function getHeaders(): Record<string, string> {
-  const token = process.env.ANTHROPIC_OAUTH_TOKEN;
-  if (!token) {
-    throw new Error("Missing ANTHROPIC_OAUTH_TOKEN environment variable");
+function getHeaders(token?: string): Record<string, string> {
+  const actualToken = token || process.env.ANTHROPIC_OAUTH_TOKEN;
+  if (!actualToken) {
+    throw new Error("Missing Anthropic API token");
   }
 
-  return {
-    Authorization: `Bearer ${token}`,
+  const headers: Record<string, string> = {
     "anthropic-version": "2023-06-01",
     "anthropic-beta":
       "claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14",
     "Content-Type": "application/json",
   };
+
+  // Standard API keys use x-api-key header; OAuth tokens use Authorization: Bearer
+  if (actualToken.startsWith("sk-ant-")) {
+    headers["x-api-key"] = actualToken;
+  } else {
+    headers["Authorization"] = `Bearer ${actualToken}`;
+  }
+
+  return headers;
 }
 
 function buildMessages(
@@ -47,12 +55,14 @@ export async function sendMessage({
   model,
   maxTokens = 4096,
   timeoutMs = 120_000,
+  token,
 }: {
   system?: string;
   messages: AnthropicMessage[];
   model?: string;
   maxTokens?: number;
   timeoutMs?: number;
+  token?: string;
 }): Promise<AnthropicResponse> {
   const body = {
     model: model || process.env.ANTHROPIC_MODEL || "claude-opus-4-6",
@@ -68,7 +78,7 @@ export async function sendMessage({
   try {
     const response = await fetch(ANTHROPIC_API_URL, {
       method: "POST",
-      headers: getHeaders(),
+      headers: getHeaders(token),
       body: JSON.stringify(body),
       signal: controller.signal,
     });
@@ -95,12 +105,14 @@ export async function streamMessage({
   model,
   maxTokens = 4096,
   timeoutMs = 120_000,
+  token,
 }: {
   system?: string;
   messages: AnthropicMessage[];
   model?: string;
   maxTokens?: number;
   timeoutMs?: number;
+  token?: string;
 }): Promise<Response> {
   const body = {
     model: model || process.env.ANTHROPIC_MODEL || "claude-opus-4-6",
@@ -116,7 +128,7 @@ export async function streamMessage({
   try {
     const response = await fetch(ANTHROPIC_API_URL, {
       method: "POST",
-      headers: getHeaders(),
+      headers: getHeaders(token),
       body: JSON.stringify(body),
       signal: controller.signal,
     });

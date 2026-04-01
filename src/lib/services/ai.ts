@@ -34,7 +34,8 @@ export async function tailorResume(params: {
     body: JSON.stringify(params),
   });
   if (!res.ok) {
-    throw new Error(`Tailor request failed (${res.status})`);
+    const errBody = await res.text().catch(() => "");
+    throw new Error(`Tailor request failed (${res.status}): ${errBody.slice(0, 200)}`);
   }
   return res.json();
 }
@@ -52,7 +53,8 @@ export async function getAtsScore(params: {
     body: JSON.stringify(params),
   });
   if (!res.ok) {
-    throw new Error(`ATS score request failed (${res.status})`);
+    const errBody = await res.text().catch(() => "");
+    throw new Error(`ATS score request failed (${res.status}): ${errBody.slice(0, 200)}`);
   }
   return res.json();
 }

@@ -3,6 +3,7 @@ import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { extractJSON } from "@/lib/json-extract";
+import { getUserAnthropicConfig, NoTokenConfiguredError } from "@/lib/user-anthropic-config";
 
 const SYSTEM_PROMPT = `You are an ATS (Applicant Tracking System) expert. You analyze resumes against job descriptions and provide detailed compatibility scores.
 
@@ -19,6 +20,16 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    let anthropicConfig;
+    try {
+      anthropicConfig = await getUserAnthropicConfig(session.user.id);
+    } catch (err) {
+      if (err instanceof NoTokenConfiguredError) {
+        return NextResponse.json({ error: "NO_API_TOKEN_CONFIGURED" }, { status: 422 });
+      }
+      throw err;
     }
 
     const rl = checkRateLimit(`${session.user.id}:ats`, { limit: 5, windowSeconds: 60 });
@@ -55,6 +66,8 @@ Return as JSON:
     const response = await sendMessage({
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: prompt }],
+      token: anthropicConfig.token,
+      model: anthropicConfig.model,
     });
 
     const content = response.content[0]?.text || "";
