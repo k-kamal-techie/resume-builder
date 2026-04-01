@@ -38,18 +38,37 @@ body {
 
 /* Print: only show resume, full A4 size */
 @media print {
-  body { background: white !important; margin: 0 !important; padding: 0 !important; }
-  body * { visibility: hidden; }
+  /* Reset page */
+  @page { size: A4; margin: 0; }
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  /* Hide everything */
+  body * { visibility: hidden; position: static; }
+  /* Unhide all ancestors up to resume-print-area so it can render */
   #resume-print-area,
-  #resume-print-area * { visibility: visible; }
+  #resume-print-area * {
+    visibility: visible !important;
+  }
   #resume-print-area {
-    position: fixed !important;
+    position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     width: 794px !important;
-    min-height: 1123px !important;
+    min-height: auto !important;
+    height: auto !important;
     transform: none !important;
     box-shadow: none !important;
+    overflow: visible !important;
   }
-  @page { size: A4; margin: 0; }
+  /* Remove all layout constraints that clip content */
+  div, main, aside, header, nav, section {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
 }
