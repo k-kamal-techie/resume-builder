@@ -36,6 +36,7 @@ export default function ResumePreview({ data, templateId, scale = 0.7 }: Props) 
         }}
       >
         <div
+          id="resume-print-area"
           className="shadow-lg bg-white"
           style={{
             width: pageWidth,
