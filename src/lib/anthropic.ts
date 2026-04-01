@@ -15,21 +15,13 @@ function getHeaders(token?: string): Record<string, string> {
     throw new Error("Missing Anthropic API token");
   }
 
-  const headers: Record<string, string> = {
+  return {
     "anthropic-version": "2023-06-01",
     "anthropic-beta":
       "claude-code-20250219,oauth-2025-04-20,fine-grained-tool-streaming-2025-05-14",
     "Content-Type": "application/json",
+    "Authorization": `Bearer ${actualToken}`,
   };
-
-  // Standard API keys use x-api-key header; OAuth tokens use Authorization: Bearer
-  if (actualToken.startsWith("sk-ant-")) {
-    headers["x-api-key"] = actualToken;
-  } else {
-    headers["Authorization"] = `Bearer ${actualToken}`;
-  }
-
-  return headers;
 }
 
 function buildMessages(
