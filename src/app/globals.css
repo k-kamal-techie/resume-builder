@@ -38,23 +38,24 @@ body {
 
 /* Print styles — only show the resume, hide everything else */
 @media print {
-  /* Hide all elements but keep layout flow */
+  /* Hide everything except the resume */
   body * {
     visibility: hidden;
   }
-  /* Reveal the resume container and all its descendants */
   #resume-print-container,
   #resume-print-container * {
     visibility: visible;
   }
-  /* Position resume at top-left of page */
+  /* Position resume at top-left, filling the page */
   #resume-print-container {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;
+    height: auto;
     background: white !important;
     padding: 0 !important;
+    z-index: 99999;
   }
   #resume-print-container > div {
     width: 100% !important;
@@ -68,7 +69,7 @@ body {
   }
   @page {
     size: A4;
-    margin: 0;
+    margin: 12mm 10mm;
   }
   .resume-section {
     break-inside: avoid;
