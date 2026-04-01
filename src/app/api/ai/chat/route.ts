@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { streamMessage } from "@/lib/anthropic";
-// Chat persistence is handled client-side via /api/chat-sessions
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 const SYSTEM_PROMPT = `You are an expert professional resume writer, career coach, and personal knowledge manager. You help users build and manage their professional profile and craft compelling, ATS-friendly resumes.
 
@@ -29,6 +29,9 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const rl = checkRateLimit(`${session.user.id}:chat`, { limit: 15, windowSeconds: 60 });
+    if (!rl.allowed) return rateLimitResponse(rl);
 
     const { message, resumeId, history } = await req.json();
     if (!message || !resumeId) {

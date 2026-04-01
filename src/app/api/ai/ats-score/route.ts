@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { extractJSON } from "@/lib/json-extract";
 
 const SYSTEM_PROMPT = `You are an ATS (Applicant Tracking System) expert. You analyze resumes against job descriptions and provide detailed compatibility scores.
 
@@ -18,6 +20,9 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const rl = checkRateLimit(`${session.user.id}:ats`, { limit: 5, windowSeconds: 60 });
+    if (!rl.allowed) return rateLimitResponse(rl);
 
     const { jobDescription, resumeData } = await req.json();
     if (!jobDescription || !resumeData) {
@@ -53,15 +58,9 @@ Return as JSON:
     });
 
     const content = response.content[0]?.text || "";
-
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        return NextResponse.json(parsed);
-      }
-    } catch {
-      // fallback
+    const parsed = extractJSON(content);
+    if (parsed) {
+      return NextResponse.json(parsed);
     }
 
     return NextResponse.json({ content });

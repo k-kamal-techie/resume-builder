@@ -46,11 +46,13 @@ export async function sendMessage({
   messages,
   model,
   maxTokens = 4096,
+  timeoutMs = 120_000,
 }: {
   system?: string;
   messages: AnthropicMessage[];
   model?: string;
   maxTokens?: number;
+  timeoutMs?: number;
 }): Promise<AnthropicResponse> {
   const body = {
     model: model || process.env.ANTHROPIC_MODEL || "claude-opus-4-6",
@@ -60,18 +62,31 @@ export async function sendMessage({
     stream: false,
   };
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: "POST",
-    headers: getHeaders(),
-    body: JSON.stringify(body),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Anthropic API error (${response.status}): ${error}`);
+  try {
+    const response = await fetch(ANTHROPIC_API_URL, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Anthropic API error (${response.status}): ${error}`);
+    }
+
+    return response.json();
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("Anthropic API request timed out");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
   }
-
-  return response.json();
 }
 
 export async function streamMessage({
@@ -79,11 +94,13 @@ export async function streamMessage({
   messages,
   model,
   maxTokens = 4096,
+  timeoutMs = 120_000,
 }: {
   system?: string;
   messages: AnthropicMessage[];
   model?: string;
   maxTokens?: number;
+  timeoutMs?: number;
 }): Promise<Response> {
   const body = {
     model: model || process.env.ANTHROPIC_MODEL || "claude-opus-4-6",
@@ -93,16 +110,30 @@ export async function streamMessage({
     stream: true,
   };
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: "POST",
-    headers: getHeaders(),
-    body: JSON.stringify(body),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Anthropic API error (${response.status}): ${error}`);
+  try {
+    const response = await fetch(ANTHROPIC_API_URL, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Anthropic API error (${response.status}): ${error}`);
+    }
+
+    // Clear timeout once streaming begins — the stream has its own lifecycle
+    clearTimeout(timer);
+    return response;
+  } catch (err) {
+    clearTimeout(timer);
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("Anthropic API request timed out");
+    }
+    throw err;
   }
-
-  return response;
 }

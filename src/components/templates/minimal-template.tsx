@@ -38,7 +38,7 @@ export default function MinimalTemplate({ data }: Props) {
 
       {/* Experience */}
       {experience.length > 0 && (
-        <section className="mb-6">
+        <section className="resume-section mb-6">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
             Experience
           </h2>
@@ -70,7 +70,7 @@ export default function MinimalTemplate({ data }: Props) {
 
       {/* Education */}
       {education.length > 0 && (
-        <section className="mb-6">
+        <section className="resume-section mb-6">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
             Education
           </h2>
@@ -92,7 +92,7 @@ export default function MinimalTemplate({ data }: Props) {
 
       {/* Skills */}
       {skills.length > 0 && (
-        <section className="mb-6">
+        <section className="resume-section mb-6">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
             Skills
           </h2>
@@ -116,7 +116,7 @@ export default function MinimalTemplate({ data }: Props) {
 
       {/* Projects */}
       {projects.length > 0 && (
-        <section className="mb-6">
+        <section className="resume-section mb-6">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
             Projects
           </h2>
@@ -136,7 +136,7 @@ export default function MinimalTemplate({ data }: Props) {
 
       {/* Certifications */}
       {certifications.length > 0 && (
-        <section>
+        <section className="resume-section">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
             Certifications
           </h2>

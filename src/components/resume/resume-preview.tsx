@@ -27,7 +27,7 @@ export default function ResumePreview({ data, templateId, scale = 0.7 }: Props) 
   const scaledHeight = pageHeight * scale;
 
   return (
-    <div className="bg-gray-100 p-4 min-h-full overflow-auto flex justify-center">
+    <div id="resume-print-container" className="bg-slate-100 dark:bg-slate-800 p-4 min-h-full overflow-auto flex justify-center">
       <div
         style={{
           width: scaledWidth,

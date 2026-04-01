@@ -23,14 +23,16 @@ src/
 │   ├── (editor)/    # Full-screen: editor/[id], preview/[id]
 │   └── api/         # REST API routes
 ├── components/
-│   ├── ai/          # chat-panel.tsx — main AI chat interface
+│   ├── ai/          # AI chat system (7 files: panel, header, messages, input, message-item, types, helpers)
 │   ├── layout/      # app-sidebar.tsx (dark sidebar), navbar/sidebar (no-ops)
 │   ├── providers/   # session-provider, theme-provider
 │   ├── resume/      # preview-panel, resume-preview, json-editor
 │   ├── templates/   # classic, modern, minimal
 │   └── ui/          # button, card, input, modal, loading-spinner
 ├── lib/
-│   ├── anthropic.ts         # Anthropic API (LOCKED system message)
+│   ├── anthropic.ts         # Anthropic API (LOCKED system message, 120s timeout)
+│   ├── rate-limit.ts        # In-memory sliding window rate limiter
+│   ├── json-extract.ts      # Robust JSON extraction from AI responses
 │   ├── services/            # Client-side service layer
 │   │   ├── ai.ts            # sendChatMessage, tailorResume, getAtsScore
 │   │   ├── resume.ts        # CRUD for resumes
@@ -68,7 +70,7 @@ See `.claude/ui/design-system.md` for full reference. Key rules:
 ## Code Conventions
 - Use `@/*` import alias for all `src/` imports
 - Mongoose models use `mongoose.models.X || mongoose.model()` pattern
-- API routes: (1) check auth, (2) connect DB, (3) validate Zod, (4) operate, (5) return JSON
+- API routes: (1) check auth, (2) rate limit, (3) connect DB, (4) validate Zod, (5) operate, (6) return JSON
 - Client components use `"use client"` directive
 - Tailwind v4: `@theme inline` in `globals.css`, no tailwind.config.js
 - Service layer: all client-side API calls go through `src/lib/services/`

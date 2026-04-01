@@ -16,9 +16,9 @@ export default function ModernTemplate({ data }: Props) {
   return (
     <div className="max-w-[800px] mx-auto bg-white font-sans text-gray-700 text-sm">
       {/* Header */}
-      <div className="bg-blue-600 text-white px-8 py-6">
+      <div className="bg-accent-600 text-white px-8 py-6">
         <h1 className="text-3xl font-bold">{personalInfo.fullName || "Your Name"}</h1>
-        <div className="flex items-center gap-4 mt-3 text-blue-100 text-xs flex-wrap">
+        <div className="flex items-center gap-4 mt-3 text-accent-100 text-xs flex-wrap">
           {personalInfo.email && (
             <span className="flex items-center gap-1"><LuMail className="h-3 w-3" />{personalInfo.email}</span>
           )}
@@ -43,34 +43,34 @@ export default function ModernTemplate({ data }: Props) {
       <div className="px-8 py-6">
         {/* Summary */}
         {personalInfo.summary && (
-          <section className="mb-6">
+          <section className="resume-section mb-6">
             <p className="text-xs leading-relaxed text-gray-600">{personalInfo.summary}</p>
           </section>
         )}
 
         {/* Experience */}
         {experience.length > 0 && (
-          <section className="mb-6">
-            <h2 className="text-lg font-bold text-blue-600 mb-3 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-blue-600" />
+          <section className="resume-section mb-6">
+            <h2 className="text-lg font-bold text-accent-600 mb-3 flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-accent-600" />
               Experience
             </h2>
             {experience.map((exp, i) => (
-              <div key={i} className="mb-4 pl-4 border-l-2 border-blue-100">
+              <div key={i} className="mb-4 pl-4 border-l-2 border-accent-100">
                 <div className="flex justify-between items-baseline">
                   <h3 className="font-bold text-sm text-gray-800">{exp.position}</h3>
                   <span className="text-xs text-gray-400 font-medium">
                     {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                   </span>
                 </div>
-                <p className="text-xs text-blue-600 font-medium">
+                <p className="text-xs text-accent-600 font-medium">
                   {exp.company}{exp.location ? ` · ${exp.location}` : ""}
                 </p>
                 {(exp.highlights || []).filter(Boolean).length > 0 && (
                   <ul className="mt-2 space-y-1">
                     {(exp.highlights || []).filter(Boolean).map((hl, j) => (
                       <li key={j} className="text-xs text-gray-600 flex gap-2">
-                        <span className="text-blue-400 mt-1">▸</span>
+                        <span className="text-accent-500 mt-1">▸</span>
                         {hl}
                       </li>
                     ))}
@@ -85,9 +85,9 @@ export default function ModernTemplate({ data }: Props) {
           {/* Education */}
           <div className="col-span-2">
             {education.length > 0 && (
-              <section className="mb-6">
-                <h2 className="text-lg font-bold text-blue-600 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-600" />
+              <section className="resume-section mb-6">
+                <h2 className="text-lg font-bold text-accent-600 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-accent-600" />
                   Education
                 </h2>
                 {education.map((edu, i) => (
@@ -104,9 +104,9 @@ export default function ModernTemplate({ data }: Props) {
 
             {/* Projects */}
             {projects.length > 0 && (
-              <section className="mb-6">
-                <h2 className="text-lg font-bold text-blue-600 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-600" />
+              <section className="resume-section mb-6">
+                <h2 className="text-lg font-bold text-accent-600 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-accent-600" />
                   Projects
                 </h2>
                 {projects.map((proj, i) => (
@@ -116,7 +116,7 @@ export default function ModernTemplate({ data }: Props) {
                     {(proj.technologies || []).length > 0 && (
                       <div className="flex gap-1 mt-1 flex-wrap">
                         {(proj.technologies || []).map((tech, j) => (
-                          <span key={j} className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[10px] rounded">
+                          <span key={j} className="px-1.5 py-0.5 bg-accent-50 text-accent-600 text-[10px] rounded">
                             {tech}
                           </span>
                         ))}
@@ -131,9 +131,9 @@ export default function ModernTemplate({ data }: Props) {
           {/* Skills sidebar */}
           <div>
             {skills.length > 0 && (
-              <section className="mb-6">
-                <h2 className="text-lg font-bold text-blue-600 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-600" />
+              <section className="resume-section mb-6">
+                <h2 className="text-lg font-bold text-accent-600 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-accent-600" />
                   Skills
                 </h2>
                 {skills.map((skill: { category?: string; items?: string[]; name?: string }, i: number) => {
@@ -158,9 +158,9 @@ export default function ModernTemplate({ data }: Props) {
             )}
 
             {certifications.length > 0 && (
-              <section>
-                <h2 className="text-lg font-bold text-blue-600 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-600" />
+              <section className="resume-section">
+                <h2 className="text-lg font-bold text-accent-600 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-accent-600" />
                   Certs
                 </h2>
                 {certifications.map((cert, i) => (

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { extractJSON } from "@/lib/json-extract";
 
 const SYSTEM_PROMPT = `You are an expert resume tailoring specialist. You analyze job descriptions and modify resumes to better match the role while keeping content truthful.
 
@@ -19,6 +21,9 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const rl = checkRateLimit(`${session.user.id}:tailor`, { limit: 5, windowSeconds: 60 });
+    if (!rl.allowed) return rateLimitResponse(rl);
 
     const { jobDescription, resumeData } = await req.json();
     if (!jobDescription || !resumeData) {
@@ -54,15 +59,9 @@ Return as JSON:
     });
 
     const content = response.content[0]?.text || "";
-
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        return NextResponse.json(parsed);
-      }
-    } catch {
-      // fallback
+    const parsed = extractJSON(content);
+    if (parsed) {
+      return NextResponse.json(parsed);
     }
 
     return NextResponse.json({ content });

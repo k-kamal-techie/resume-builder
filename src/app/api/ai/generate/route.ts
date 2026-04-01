@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { sendMessage } from "@/lib/anthropic";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { extractJSON } from "@/lib/json-extract";
 
 const SYSTEM_PROMPT = `You are an expert resume content generator. Generate professional, ATS-friendly resume content based on the user's input.
 
@@ -19,6 +21,9 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const rl = checkRateLimit(`${session.user.id}:generate`, { limit: 10, windowSeconds: 60 });
+    if (!rl.allowed) return rateLimitResponse(rl);
 
     const { type, input, context } = await req.json();
     if (!type || !input) {
@@ -56,15 +61,9 @@ export async function POST(req: NextRequest) {
     });
 
     const content = response.content[0]?.text || "";
-
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        return NextResponse.json(parsed);
-      }
-    } catch {
-      // If JSON parsing fails, return raw content
+    const parsed = extractJSON(content);
+    if (parsed) {
+      return NextResponse.json(parsed);
     }
 
     return NextResponse.json({ content });

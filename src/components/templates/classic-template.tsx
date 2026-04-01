@@ -31,7 +31,7 @@ export default function ClassicTemplate({ data }: Props) {
 
       {/* Summary */}
       {personalInfo.summary && (
-        <section className="mb-4">
+        <section className="resume-section mb-4">
           <h2 className="text-sm font-bold uppercase border-b border-gray-400 pb-1 mb-2">
             Professional Summary
           </h2>
@@ -41,7 +41,7 @@ export default function ClassicTemplate({ data }: Props) {
 
       {/* Experience */}
       {experience.length > 0 && (
-        <section className="mb-4">
+        <section className="resume-section mb-4">
           <h2 className="text-sm font-bold uppercase border-b border-gray-400 pb-1 mb-2">
             Experience
           </h2>
@@ -70,7 +70,7 @@ export default function ClassicTemplate({ data }: Props) {
 
       {/* Education */}
       {education.length > 0 && (
-        <section className="mb-4">
+        <section className="resume-section mb-4">
           <h2 className="text-sm font-bold uppercase border-b border-gray-400 pb-1 mb-2">
             Education
           </h2>
@@ -91,7 +91,7 @@ export default function ClassicTemplate({ data }: Props) {
 
       {/* Skills */}
       {skills.length > 0 && (
-        <section className="mb-4">
+        <section className="resume-section mb-4">
           <h2 className="text-sm font-bold uppercase border-b border-gray-400 pb-1 mb-2">
             Skills
           </h2>
@@ -114,7 +114,7 @@ export default function ClassicTemplate({ data }: Props) {
 
       {/* Projects */}
       {projects.length > 0 && (
-        <section className="mb-4">
+        <section className="resume-section mb-4">
           <h2 className="text-sm font-bold uppercase border-b border-gray-400 pb-1 mb-2">
             Projects
           </h2>
@@ -122,7 +122,7 @@ export default function ClassicTemplate({ data }: Props) {
             <div key={i} className="mb-2">
               <div className="flex justify-between items-baseline">
                 <h3 className="font-bold text-xs">{proj.name}</h3>
-                {proj.url && <span className="text-xs text-blue-600">{proj.url}</span>}
+                {proj.url && <span className="text-xs text-accent-600">{proj.url}</span>}
               </div>
               <p className="text-xs text-gray-600">{proj.description}</p>
               {(proj.technologies || []).length > 0 && (
@@ -144,7 +144,7 @@ export default function ClassicTemplate({ data }: Props) {
 
       {/* Certifications */}
       {certifications.length > 0 && (
-        <section>
+        <section className="resume-section">
           <h2 className="text-sm font-bold uppercase border-b border-gray-400 pb-1 mb-2">
             Certifications
           </h2>
