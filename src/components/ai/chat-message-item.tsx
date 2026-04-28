@@ -59,15 +59,16 @@ function MessageContent({
 
   return (
     <div>
-      <div className="prose prose-sm max-w-none text-slate-700 dark:text-slate-300
+      <div className="prose prose-sm max-w-none min-w-0 text-slate-700 dark:text-slate-300 break-words
         [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
         [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5 [&_p]:my-1.5
         [&_h2]:text-sm [&_h3]:text-sm [&_h2]:font-semibold [&_h3]:font-semibold [&_h2]:mt-3 [&_h3]:mt-2
-        [&_code]:text-xs [&_code]:bg-slate-100 dark:[&_code]:bg-slate-700 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-slate-700 dark:[&_code]:text-slate-300 [&_code]:font-mono
-        [&_pre]:bg-slate-50 dark:[&_pre]:bg-slate-900 [&_pre]:text-xs [&_pre]:p-3 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-slate-200 dark:[&_pre]:border-slate-700
+        [&_code]:text-xs [&_code]:bg-slate-100 dark:[&_code]:bg-slate-700 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-slate-700 dark:[&_code]:text-slate-300 [&_code]:font-mono [&_code]:break-all
+        [&_pre]:bg-slate-50 dark:[&_pre]:bg-slate-900 [&_pre]:text-xs [&_pre]:p-3 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:max-w-full [&_pre]:border [&_pre]:border-slate-200 dark:[&_pre]:border-slate-700
+        [&_pre_code]:break-normal [&_pre_code]:whitespace-pre
         [&_table]:text-xs [&_table]:w-full [&_th]:px-2 [&_th]:py-1.5 [&_th]:text-left [&_td]:px-2 [&_td]:py-1.5 [&_tr]:border-b [&_tr]:border-slate-100 dark:[&_tr]:border-slate-700
         [&_strong]:text-slate-900 dark:[&_strong]:text-slate-100 [&_strong]:font-semibold
-        [&_a]:text-accent-600 [&_a]:underline-offset-2">
+        [&_a]:text-accent-600 [&_a]:underline-offset-2 [&_a]:break-all">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
       </div>
 
@@ -88,7 +89,7 @@ function MessageContent({
         </div>
       )}
       {showJson && jsonMatch && (
-        <pre className="mt-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 overflow-x-auto max-h-48 overflow-y-auto text-slate-600 dark:text-slate-400 font-mono">
+        <pre className="mt-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 overflow-x-auto max-h-48 overflow-y-auto max-w-full text-slate-600 dark:text-slate-400 font-mono">
           {jsonMatch[1].trim()}
         </pre>
       )}
@@ -126,8 +127,8 @@ export default function ChatMessageItem({ message, userImage, userName, onApplyR
         ? <AgentAvatar />
         : <UserAvatar src={userImage} name={userName} />
       }
-      <div className={`flex flex-col ${message.role === "user" ? "items-end max-w-[80%]" : "items-start max-w-[90%]"}`}>
-        <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+      <div className={`flex flex-col min-w-0 ${message.role === "user" ? "items-end max-w-[80%]" : "items-start max-w-[90%]"}`}>
+        <div className={`min-w-0 max-w-full rounded-2xl px-4 py-3 text-sm leading-relaxed overflow-hidden ${
           message.role === "user"
             ? "bg-accent-600 text-white rounded-tr-md shadow-sm"
             : "bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 text-slate-800 dark:text-slate-200 rounded-tl-md shadow-sm"
@@ -141,7 +142,7 @@ export default function ChatMessageItem({ message, userImage, userName, onApplyR
               onApplyKB={onApplyKB}
             />
           ) : (
-            <span className="whitespace-pre-wrap">{message.content}</span>
+            <span className="whitespace-pre-wrap break-words">{message.content}</span>
           )}
         </div>
         {message.timestamp && (

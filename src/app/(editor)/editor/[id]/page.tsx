@@ -102,7 +102,8 @@ function EditorContent({ id }: { id: string }) {
     try {
       await updateKnowledgeBase(newKB);
     } catch (error) {
-      console.error("Failed to save KB:", error);
+      // Surface as warn so Next.js dev overlay doesn't fire on best-effort saves
+      console.warn("Failed to save KB:", error);
     }
   }, []);
 

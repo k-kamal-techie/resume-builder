@@ -35,8 +35,8 @@ const timelineEntrySchema = z.object({
 const skillSchema = z.object({
   name: z.string().min(1),
   category: z.string().min(1),
-  proficiency: z.number().min(0).max(100).default(50),
-  yearsOfExperience: z.number().optional(),
+  proficiency: z.coerce.number().min(0).max(100).default(50),
+  yearsOfExperience: z.coerce.number().optional(),
   tags: z.array(z.string()).default([]),
 });
 

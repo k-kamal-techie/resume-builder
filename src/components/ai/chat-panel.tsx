@@ -32,7 +32,12 @@ export default function ChatPanel({
   const [activeSessionTitle, setActiveSessionTitle] = useState<string>("");
   const [showSessions, setShowSessions] = useState(false);
   const [loadingSession, setLoadingSession] = useState(false);
+  const [authExpired, setAuthExpired] = useState(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function isAuthError(err: unknown): boolean {
+    return err instanceof Error && /\(401\)/.test(err.message);
+  }
 
   // Load sessions on mount
   useEffect(() => {
@@ -44,15 +49,22 @@ export default function ChatPanel({
 
   // Auto-save with 1s debounce
   useEffect(() => {
-    if (!activeSessionId || messages.length === 0) return;
+    if (!activeSessionId || messages.length === 0 || authExpired) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       saveChatSession(activeSessionId, {
         messages: messages.map((m) => ({ role: m.role, content: m.content, timestamp: m.timestamp || new Date().toISOString() })),
-      }).catch(console.error);
+      }).catch((err) => {
+        if (isAuthError(err)) {
+          setAuthExpired(true);
+        } else {
+          // Autosave is best-effort — warn instead of error so dev overlay doesn't fire
+          console.warn("Autosave failed:", err);
+        }
+      });
     }, 1000);
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  }, [messages, activeSessionId]);
+  }, [messages, activeSessionId, authExpired]);
 
   // Initial JD auto-send
   useEffect(() => {
@@ -102,19 +114,36 @@ export default function ChatPanel({
   function buildEnrichedMessage(msg: string): string {
     const parts: string[] = [];
     if (knowledgeBase) {
-      const kbSummary = {
-        profile: knowledgeBase.profile,
-        skills: knowledgeBase.skills.map((s) => `${s.name} (${s.category}, ${s.proficiency}%)`),
-        timeline: knowledgeBase.timeline.map((t) => `${t.type}: ${t.title} at ${t.organization} (${t.startDate}-${t.endDate || "present"})`),
-        projects: knowledgeBase.projects.map((p) => `${p.name}: ${p.description.substring(0, 100)}`),
-        achievements: knowledgeBase.achievements.map((a) => a.title),
-      };
-      parts.push("[Your Knowledge Base]", JSON.stringify(kbSummary, null, 2), "");
+      parts.push(
+        "[Your Knowledge Base — full JSON, this is the EXACT shape any kb-json reply must match]",
+        JSON.stringify(
+          {
+            profile: knowledgeBase.profile,
+            timeline: knowledgeBase.timeline,
+            skills: knowledgeBase.skills,
+            projects: knowledgeBase.projects,
+            achievements: knowledgeBase.achievements,
+          },
+          null,
+          2,
+        ),
+        "",
+      );
     }
-    parts.push("[Current Resume]", JSON.stringify(resumeData, null, 2), "",
+    parts.push(
+      "[Current Resume]",
+      JSON.stringify(resumeData, null, 2),
+      "",
       "[Instructions]",
       "- When updating the resume, output a ```resume-json code block with the COMPLETE updated resume JSON",
-      "- When updating the knowledge base, output a ```kb-json code block with the COMPLETE updated KB JSON",
+      "- When updating the knowledge base, output a ```kb-json code block with the COMPLETE updated KB JSON in the SAME shape as above (preserve all object structures — do NOT replace objects with summary strings)",
+      "- KB shape requirements (Zod-validated server side):",
+      "  • profile.fullName, profile.email are required strings; URL fields (website, linkedin, github) must be valid http(s) URLs or empty string",
+      "  • timeline[i] requires: type (one of \"role\"|\"education\"|\"certification\"|\"achievement\"|\"volunteer\"), title, organization, startDate; arrays default to []",
+      "  • skills[i] requires: name, category; proficiency is a number 0–100",
+      "  • projects[i] requires: name, description; technologies/highlights/tags are arrays",
+      "  • achievements[i] requires: title",
+      "- Always output ALL items (do not abbreviate or summarize) when emitting kb-json",
       "- You can output both blocks if updating both",
       "- Ask clarifying questions before making major changes",
       "- Be conversational and interactive — ask about details, quantify achievements",
@@ -296,6 +325,18 @@ export default function ChatPanel({
         onRenameSession={handleRenameSession}
         onRenameCurrentSession={handleRenameCurrentSession}
       />
+
+      {authExpired && (
+        <div className="px-4 py-2.5 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-800/40 text-xs text-amber-800 dark:text-amber-300 flex items-center justify-between gap-3">
+          <span>Your session has expired. Chat won&apos;t auto-save until you sign in again.</span>
+          <a
+            href="/login"
+            className="font-semibold text-amber-900 dark:text-amber-200 hover:text-amber-700 dark:hover:text-amber-100 underline underline-offset-2 shrink-0"
+          >
+            Sign in
+          </a>
+        </div>
+      )}
 
       <ChatMessages
         messages={messages}
